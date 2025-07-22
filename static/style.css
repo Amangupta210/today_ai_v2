@@ -1,171 +1,87 @@
-/* =========================
-   RESET & BASE STYLES
-========================= */
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-}
-
+/* GLOBAL STYLES */
 body {
-  font-family: "Poppins", Arial, sans-serif;
-  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+  background: #f7f9fc;
   color: #333;
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  margin: 0;
 }
 
-/* Links & Buttons */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  outline: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-size: 1rem;
-  background: linear-gradient(135deg, #007bff, #00bfff);
-  color: #fff;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background: linear-gradient(135deg, #0056b3, #0078d4);
-  transform: translateY(-2px);
-}
-
-/* Containers */
-.container {
-  width: 90%;
-  max-width: 1200px;
-  margin: auto;
-  padding: 1rem;
-}
-
-/* =========================
-   HEADER / NAVIGATION
-========================= */
+/* HEADER */
 header {
-  background: #fff;
-  padding: 1rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  background: #4a90e2;
+  color: #fff;
+  padding: 20px 15px;
+  text-align: center;
 }
 
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-nav .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #007bff;
+header h1 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
 }
 
 nav ul {
-  display: flex;
-  gap: 1.5rem;
   list-style: none;
-}
-
-nav ul li a {
-  font-size: 1rem;
-  color: #333;
-  transition: color 0.3s;
-}
-
-nav ul li a:hover {
-  color: #007bff;
-}
-
-/* =========================
-   SECTIONS
-========================= */
-section {
-  padding: 3rem 0;
-}
-
-section h2 {
-  font-size: 2rem;
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #222;
-}
-
-section p {
-  text-align: center;
-  max-width: 600px;
-  margin: auto;
-  color: #555;
-}
-
-/* =========================
-   GRID / FLEX
-========================= */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.flex {
   display: flex;
-  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-/* =========================
-   FOOTER
-========================= */
+nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #ffdf5e;
+}
+
+/* MAIN CONTENT */
+main {
+  padding: 20px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+main h2 {
+  margin-bottom: 10px;
+  color: #4a90e2;
+}
+
+/* FOOTER */
 footer {
   background: #222;
   color: #fff;
-  padding: 2rem 0;
   text-align: center;
+  padding: 10px 0;
+  margin-top: 20px;
 }
 
-footer a {
-  color: #00bfff;
-  transition: color 0.3s;
-}
-
-footer a:hover {
-  color: #fff;
-}
-
-/* =========================
-   RESPONSIVE DESIGN
-========================= */
+/* RESPONSIVE DESIGN */
 @media (max-width: 768px) {
+  header h1 {
+    font-size: 1.6rem;
+  }
+
   nav ul {
     flex-direction: column;
-    gap: 1rem;
+    gap: 10px;
   }
 
-  header {
-    text-align: center;
+  main {
+    padding: 10px;
   }
 }
 
-@media (max-width: 480px) {
-  html {
-    font-size: 15px;
-  }
-  button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-}
+
