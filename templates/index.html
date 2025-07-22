@@ -3,197 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SNEAI - Your Intelligent Assistant</title>
-  <link rel="stylesheet" href="static/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="static/favicon.ico" type="image/x-icon">
+  <title>SNEAI V2</title>
+  <link rel="stylesheet" href="static/style.css" />
 </head>
 <body>
   <div class="container">
     <!-- Header -->
-    <div class="header">
+    <header class="header">
       <div class="logo">
-        <i class="fas fa-robot"></i>
-        <h1>SNEAI</h1>
-        <span class="tagline">Your Intelligent Assistant</span>
+        <h1>SNEAI V2</h1>
+        <span class="tagline">Your Personal AI Assistant</span>
       </div>
       <div class="header-controls">
-        <button class="control-btn" onclick="clearChat()" title="Clear Chat">
-          <i class="fas fa-trash-alt"></i>
-        </button>
-        <button class="control-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
-          <i class="fas fa-moon" id="theme-icon"></i>
-        </button>
+        <button id="theme-toggle" title="Toggle Theme">🌗</button>
+        <button id="help-btn" title="Help">❔</button>
       </div>
-    </div>
+    </header>
 
-    <!-- Chat -->
+    <!-- Chat Section -->
     <div class="chat-container">
       <div id="chat-box"></div>
     </div>
 
-    <!-- Input -->
-    <div class="input-container">
-      <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
-      <button id="send-btn" onclick="sendMessage()" title="Send Message (Enter)">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-
     <!-- Features -->
     <div class="features-container">
-      <div class="feature-card" onclick="quickPrompt('Tell me a joke')">
-        <i class="fas fa-laugh"></i><span>Joke</span>
-      </div>
-      <div class="feature-card" onclick="quickPrompt('Tell me an interesting fact')">
-        <i class="fas fa-lightbulb"></i><span>Fact</span>
-      </div>
-      <div class="feature-card" onclick="quickPrompt('What\'s the weather today?')">
-        <i class="fas fa-cloud-sun"></i><span>Weather</span>
-      </div>
-      <div class="feature-card" onclick="quickPrompt('Search the web for artificial intelligence')">
-        <i class="fas fa-search"></i><span>Web Search</span>
-      </div>
-      <div class="feature-card" onclick="quickPrompt('Search Wikipedia for quantum physics')">
-        <i class="fas fa-book"></i><span>Wikipedia</span>
-      </div>
-      <div class="feature-card" onclick="showTeachModal()">
-        <i class="fas fa-brain"></i><span>Teach AI</span>
-      </div>
-      <div class="feature-card" id="voice-card" onclick="startVoiceRecognition()">
-        <i class="fas fa-microphone"></i><span>Speak</span>
-      </div>
+      <div class="feature-card" id="teach-btn"><i>📖</i>Teach</div>
+      <div class="feature-card" id="history-btn"><i>📜</i>History</div>
+      <div class="feature-card" id="mode-btn"><i>💡</i>Modes</div>
     </div>
+
+    <!-- Input -->
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Type your message..." />
+      <button id="send-btn">➤</button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>— Created by Aman Gupta</p>
+    </footer>
   </div>
 
-  <!-- Teach AI Modal -->
-  <div id="teach-modal" class="modal">
+  <!-- Help Modal -->
+  <div id="help-modal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeTeachModal()">&times;</span>
-      <h2>Teach SNEAI</h2>
-      <p>Add custom responses to make your AI smarter!</p>
-      <div class="form-group">
-        <label for="pattern">When I say (pattern):</label>
-        <input type="text" id="pattern" placeholder="e.g., What's your favorite color?">
-      </div>
-      <div class="form-group">
-        <label for="response">You should respond with:</label>
-        <textarea id="response" placeholder="e.g., My favorite color is blue!"></textarea>
-      </div>
-      <button onclick="teachAI()">Teach SNEAI</button>
+      <span class="close" id="help-close">&times;</span>
+      <h2>Help & Features</h2>
+      <ul>
+        <li><b>Teach:</b> Add custom AI replies.</li>
+        <li><b>History:</b> View last chats.</li>
+        <li><b>Secret Modes:</b> Try <code>s1</code>, <code>sneha</code>, <code>f1</code>.</li>
+      </ul>
     </div>
   </div>
 
- <footer>
-  <p>— Created by Aman Gupta</p>
-</footer>
-
-
-  <!-- JS -->
+  <!-- JavaScript -->
   <script>
-    let chatHistory = [];
-    let recognition, synth, isSpeechEnabled = false;
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+    const chatBox = document.getElementById("chat-box");
 
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      loadChatHistory();
-      initSpeechRecognition();
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-      if (chatHistory.length === 0) addMessage("Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities.", 'ai');
-    });
+    const themeToggle = document.getElementById("theme-toggle");
+    const helpBtn = document.getElementById("help-btn");
+    const helpModal = document.getElementById("help-modal");
+    const helpClose = document.getElementById("help-close");
 
-    // Speech Recognition Init
-    function initSpeechRecognition() {
-      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.onresult = e => { document.getElementById("user-input").value = e.results[0][0].transcript; sendMessage(); };
-        recognition.onerror = e => { addMessage("Speech recognition error: " + e.error, 'system'); };
-        recognition.onend = () => { document.getElementById('voice-card').classList.remove('listening'); };
-        isSpeechEnabled = true;
-      }
-      synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
-    }
-    function startVoiceRecognition() { if (!isSpeechEnabled) return addMessage("Speech recognition not supported.", 'system'); recognition.start(); document.getElementById('voice-card').classList.add('listening'); addMessage("Listening...", 'system'); }
-    function speakResponse(text) { if (!synth) return; synth.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 1; synth.speak(u); }
+    const teachBtn = document.getElementById("teach-btn");
+    const historyBtn = document.getElementById("history-btn");
+    const modeBtn = document.getElementById("mode-btn");
 
-    // Send Message
-    async function sendMessage() {
-      const input = document.getElementById("user-input").value.trim();
-      if (!input) return;
-      addMessage(input, 'user');
-      chatHistory.push({ role: 'user', content: input });
-      document.getElementById("user-input").value = "";
-      showTypingIndicator();
-      try {
-        const res = await fetch('/ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: input }) });
-        const data = await res.json();
-        removeTypingIndicator();
-        addMessage(data.reply, 'ai');
-        chatHistory.push({ role: 'ai', content: data.reply });
-        saveChatHistory();
-        speakResponse(data.reply);
-      } catch (error) { removeTypingIndicator(); addMessage("Error! Try again.", 'ai'); }
+    // Voice reply (Speak only AI's answer)
+    function speak(text) {
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.lang = "en-IN";
+      speech.rate = 1;
+      window.speechSynthesis.speak(speech);
     }
 
-    // Add Message
-    function addMessage(text, sender) {
-      const chatBox = document.getElementById("chat-box");
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${sender}-message`;
-      const contentDiv = document.createElement("div");
-      contentDiv.className = "message-content";
-      const p = document.createElement("p");
-      p.innerHTML = processTextFormatting(text);
-      contentDiv.appendChild(p);
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "message-time";
-      timeDiv.textContent = getCurrentTime();
-      messageDiv.append(contentDiv, timeDiv);
-      chatBox.appendChild(messageDiv);
+    // Append messages
+    function appendMessage(text, isUser = false) {
+      const msgDiv = document.createElement("div");
+      msgDiv.classList.add("message", isUser ? "user-message" : "ai-message");
+      msgDiv.innerHTML = `<p>${text}</p>`;
+      chatBox.appendChild(msgDiv);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-    function processTextFormatting(text) {
-      return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>')
-                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                 .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                 .replace(/\n/g, '<br>');
-    }
 
-    // Utility
-    function getCurrentTime() { const now = new Date(); let h = now.getHours(), m = now.getMinutes(); const ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return `${h}:${m < 10 ? '0' + m : m} ${ampm}`; }
-    function showTypingIndicator() { const chatBox = document.getElementById("chat-box"); const div = document.createElement("div"); div.className = "message ai-message typing-indicator"; div.id = "typing-indicator"; div.innerHTML = '<div class="message-content"><div class="typing-dots"><span></span><span></span><span></span></div><p>Thinking...</p></div>'; chatBox.appendChild(div); chatBox.scrollTop = chatBox.scrollHeight; }
-    function removeTypingIndicator() { const t = document.getElementById("typing-indicator"); if (t) t.remove(); }
-    function quickPrompt(text) { document.getElementById("user-input").value = text; sendMessage(); }
-    function showTeachModal() { document.getElementById("teach-modal").style.display = "flex"; }
-    function closeTeachModal() { document.getElementById("teach-modal").style.display = "none"; }
+    // Send message
+    async function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      appendMessage(text, true);
+      userInput.value = "";
 
-    async function teachAI() {
-      const pattern = document.getElementById("pattern").value.trim(), response = document.getElementById("response").value.trim();
-      if (!pattern || !response) return alert("Both fields are required!");
-      showTypingIndicator();
       try {
-        const res = await fetch('/teach', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pattern, response }) });
-        const data = await res.json();
-        removeTypingIndicator();
-        closeTeachModal();
-        addMessage(data.message, 'ai');
-        chatHistory.push({ role: 'ai', content: data.message });
-        saveChatHistory();
-      } catch (e) { removeTypingIndicator(); addMessage("Teach failed.", 'ai'); }
+        const response = await fetch("/get_response", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await response.json();
+        appendMessage(data.reply);
+        speak(data.reply);
+      } catch (err) {
+        appendMessage("Error: Cannot reach server.");
+      }
     }
 
-    function saveChatHistory() { if (chatHistory.length > 100) chatHistory = chatHistory.slice(-100); localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory)); }
-    function loadChatHistory() { const saved = localStorage.getItem('sneai_chat_history'); if (saved) { chatHistory = JSON.parse(saved); chatHistory.slice(-10).forEach(msg => addMessage(msg.content, msg.role)); } }
-    function clearChat() { document.getElementById("chat-box").innerHTML = ''; chatHistory = []; localStorage.removeItem('sneai_chat_history'); addMessage("Hello! I'm SNEAI, ready to assist you.", 'ai'); }
-    function toggleTheme() { document.body.classList.toggle('dark-theme'); localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); }
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
 
-    // Keyboard Shortcuts
-    document.getElementById("user-input").addEventListener("keyup", e => { if (e.key === "Enter") sendMessage(); });
-    document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') sendMessage(); if (e.key === 'Escape') closeTeachModal(); });
-    window.onclick = e => { if (e.target === document.getElementById("teach-modal")) closeTeachModal(); };
+    // Theme toggle
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-theme");
+    });
+
+    // Help modal
+    helpBtn.addEventListener("click", () => helpModal.style.display = "flex");
+    helpClose.addEventListener("click", () => helpModal.style.display = "none");
+
+    // Teach
+    teachBtn.addEventListener("click", () => {
+      const pattern = prompt("Enter a word/phrase to teach:");
+      const response = prompt("Enter the AI's reply for this:");
+      if (pattern && response) {
+        fetch("/teach", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pattern, response })
+        }).then(() => alert(`Taught AI: '${pattern}' -> '${response}'`));
+      }
+    });
+
+    // History
+    historyBtn.addEventListener("click", () => {
+      fetch("/history").then(res => res.json()).then(data => {
+        alert("Chat History:\n\n" + data.history.map(h => `You: ${h.user}\nAI: ${h.sneai}`).join("\n\n"));
+      });
+    });
+
+    // Modes
+    modeBtn.addEventListener("click", () => {
+      alert("Try secret triggers: s1, s2, sneha, f1, etc.");
+    });
   </script>
 </body>
 </html>
+
