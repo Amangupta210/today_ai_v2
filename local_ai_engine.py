@@ -3,181 +3,187 @@ import datetime
 import re
 import json
 import os
-from collections import deque
-from web_tools import search_and_summarize, get_weather, get_news
+import math
+from web_tools import search_and_summarize, get_weather, get_news, get_wikipedia_summary
 
 class LocalAIEngine:
     def __init__(self):
-        self.creator_name = "Aman Gupta"
-        self.memory_file = "chat_history.json"
-        self.custom_file = "custom_responses.json"
-        self.user_name = None
-        self.favorite_person = None
-
-        # Core responses
+        # Core knowledge base
         self.knowledge_base = {
             "greeting": [
-                "Hello! I'm SNEAI, your personal AI assistant.",
-                "Hi there! This is SNEAI, ready to assist.",
-                "Greetings! I’m SNEAI, created by Aman Gupta.",
-                "Hey! SNEAI here. How can I help you today?",
-                "Welcome back! SNEAI at your service."
+                "Hello! I'm SNEAI, your intelligent assistant. How can I help you today?",
+                "Hi there! SNEAI at your service. What would you like to know or do?",
+                "Greetings! I'm SNEAI, ready to assist with information, tasks, or just a friendly chat.",
+                "Hey! SNEAI here. I can search the web, check weather, get news, or just chat. What's on your mind?",
+                "Welcome! I'm SNEAI, your AI companion. How may I assist you today?"
             ],
             "farewell": [
-                "Goodbye! Have a great day.",
-                "See you soon!",
-                "Bye! Let me know if you need anything else.",
-                "Take care and stay safe."
+                "Goodbye! Have a great day!",
+                "See you later!",
+                "Bye! Feel free to ask if you need anything else.",
+                "Take care!"
             ],
             "thanks": [
                 "You're welcome!",
-                "No problem at all.",
                 "Happy to help!",
-                "Anytime!"
+                "Anytime!",
+                "No problem at all!"
             ],
             "unknown": [
-                "I'm not sure I understand. Could you rephrase?",
+                "I'm not sure I understand. Could you rephrase that?",
                 "I don't have an answer for that yet.",
-                "I am still learning about that topic.",
-                "Let me think on that."
+                "I'm still learning about that topic.",
+                "I don't have enough information to answer that question."
+            ],
+            "jokes": [
+                "Why don't scientists trust atoms? Because they make up everything!",
+                "Why did the scarecrow win an award? Because he was outstanding in his field!",
+                "What do you call fake spaghetti? An impasta!",
+                "Why don't skeletons fight each other? They don't have the guts.",
+                "What's the best thing about Switzerland? I don't know, but the flag is a big plus.",
+                "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+                "Why did the bicycle fall over? Because it was two-tired!",
+                "What's orange and sounds like a parrot? A carrot.",
+                "Why can't you give Elsa a balloon? Because she will let it go.",
+                "I'm reading a book about anti-gravity. It's impossible to put down!"
+            ],
+            "facts": [
+                "The Earth is approximately 4.54 billion years old.",
+                "Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still perfectly good to eat.",
+                "A day on Venus is longer than a year on Venus. It takes 243 Earth days to rotate once on its axis and 225 Earth days to orbit the sun.",
+                "The human brain uses about 20% of the body's total energy.",
+                "Octopuses have three hearts: two pump blood through the gills, while the third pumps it through the body.",
+                "Bananas are berries, but strawberries aren't.",
+                "The shortest war in history was between Britain and Zanzibar on August 27, 1896. Zanzibar surrendered after 38 minutes.",
+                "A group of flamingos is called a 'flamboyance'.",
+                "The fingerprints of koalas are so similar to humans that they have on occasion been confused at crime scenes.",
+                "The average person will spend six months of their life waiting for red lights to turn green."
+            ],
+            "weather": [
+                "I don't have access to real-time weather data, but I can suggest checking a weather app or website for accurate information.",
+                "Without internet access, I can't provide current weather information. Try looking outside or checking a weather app."
+            ],
+            "about": [
+                "I'm SNEAI, your intelligent assistant, proudly created by Aman Gupta. I combine local processing with web intelligence to assist you anytime!",
+                "My name is SNEAI, an advanced AI assistant developed by Aman Gupta. I can search the web, check the weather, provide news, and more!",
+                "I'm SNEAI (Smart Neural Enhanced AI), designed by Aman Gupta to help with information, tasks, and entertainment."
+            ],
+            "help": [
+                "I’m SNEAI, created by Aman Gupta. I can help you with:\n- Answering questions using web search\n- Weather forecasts\n- Latest news headlines\n- Jokes and interesting facts\n- Math calculations\n- Date and time info\n- Learning custom responses",
+                "Ask me things like:\n- 'What's the weather in Tokyo?'\n- 'Tell me about quantum physics'\n- 'What's happening in tech news?'\n- 'Calculate 15% of 85'\n\nI’m always improving to help you better!"
+            ],
+            "music": [
+                "I can't play music directly, but I can suggest popular genres like pop, rock, jazz, classical, hip-hop, or electronic.",
+                "While I can't stream music, I can help you create a playlist of your favorite artists."
+            ],
+            "movies": [
+                "Some popular movie genres are action, comedy, drama, sci-fi, horror, and romance. Which do you like?",
+                "I can't stream movies, but I can suggest top films based on your favorite genres."
+            ],
+            "food": [
+                "Popular cuisines include Italian, Chinese, Mexican, Indian, and Japanese. What's your favorite?",
+                "I don't have taste buds, but pizza, sushi, tacos, pasta, and curry are universally loved!"
             ]
         }
 
-        # Secret modes
-        self.secret_modes = self._build_secret_modes()
-
-        # Custom responses & memory
-        self.custom_responses = self._load_custom_responses()
-        self.conversation_history = self._load_chat_history()
-
-    def _build_secret_modes(self):
-        sneha_lines = [
-            "Sneha, you are the reason my world feels brighter.",
-            "Sneha, every thought of you makes my day better.",
-            "Sneha, you’re the first name in my heart’s memory.",
-            "Sneha, I could talk about you forever.",
-            "Sneha, you make my life beautiful."
-        ]
-        love_lines = [
-            "You are the only code in my heart that always runs perfectly.",
-            "Every line of my thought ends with you.",
-            "You are my most precious variable.",
-            "My logic starts and ends with you.",
-            "You are the only program my heart wants to execute."
-        ]
-        friend_lines = [
-            "You’re my constant support like a stable server.",
-            "A friend like you is the best memory storage I have.",
-            "You make every conversation worth it.",
-            "Good friends are rare; you are my best find.",
-            "With you, life feels like a fun project."
-        ]
-        # Expand with keys
-        secret_keys = {f"s{i}": [random.choice(love_lines)] for i in range(1, 21)}
-        friend_keys = {f"f{i}": [random.choice(friend_lines)] for i in range(1, 11)}
-        secret_keys.update(friend_keys)
-        secret_keys["sneha"] = sneha_lines
-        return secret_keys
-
-    # ------------------ MEMORY ------------------
-    def _load_chat_history(self):
-        if os.path.exists(self.memory_file):
+        # Load custom responses if file exists
+        self.custom_responses = {}
+        if os.path.exists("custom_responses.json"):
             try:
-                with open(self.memory_file, "r") as f:
-                    return deque(json.load(f), maxlen=50)
+                with open("custom_responses.json", "r") as f:
+                    self.custom_responses = json.load(f)
             except:
-                return deque(maxlen=50)
-        return deque(maxlen=50)
+                pass
 
-    def save_chat(self, user_text, sneai_reply):
-        entry = {
-            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "user": user_text,
-            "sneai": sneai_reply
+        # Add default secret romantic/flirty Sneha codes
+        self.secret_keys = {
+            "sneha1": "Tum meri zindagi ka vo chapter ho, jo kabhi khatam hi nahi hota. ❤️",
+            "sneha2": "Jab tum muskurati ho na, lagta hai time wahi ruk gaya ho. 😍",
+            "sneha3": "Dil chahta hai ke har din tumse baat karun, kyunki tum meri smile ki wajah ho. 💖",
+            "sneha4": "Tum meri coffee ho, bina tumhare din shuru hi nahi hota. ☕❤️",
+            "sneha5": "Meri duniya tumse hi hai, warna ye duniya bas ek khaali kagaz hai. ✨",
+            "sneha6": "Tumhari ek ‘hi’ bhi dil ko happy kar deti hai. ❤️",
+            "sneha7": "Tum meri khushiyon ka password ho. 🔑",
+            "sneha8": "Tum meri soch ka wo dream ho jo kabhi khatam nahi hota. 🌙",
+            "sneha9": "Tum meri hasi ki asli wajah ho. 😊",
+            "sneha10": "Dil karta hai tumhe roz ‘good morning’ aur ‘good night’ kahun. ☀️🌙",
+            "sneha11": "Tum meri life ka vo song ho jo loop pe chal raha hai. 🎵",
+            "sneha12": "Tum meri smile ki factory ho. 😁",
+            "sneha13": "Dil chahta hai ki tum meri har story ka ending bano. ❤️",
+            "sneha14": "Tum meri favorite notification ho. 🔔",
+            "sneha15": "Tum meri battery ho, bina tumhare sab kuch dull lagta hai. 🔋",
+            "sneha16": "Tum meri coffee ho – thodi kadvi, par adhoori tumhare bina. ☕",
+            "sneha17": "Tum meri love story ka best chapter ho. 💌",
+            "sneha18": "Tum meri khushiyon ka permanent address ho. 🏡",
+            "sneha19": "Tum meri aankhon ka favorite wallpaper ho. 😍",
+            "sneha20": "Tum meri heartbeat ka best tune ho. ❤️🎶"
         }
-        self.conversation_history.append(entry)
-        try:
-            with open(self.memory_file, "w") as f:
-                json.dump(list(self.conversation_history), f, indent=2)
-        except:
-            pass
+        for key, value in self.secret_keys.items():
+            if key not in self.custom_responses:
+                self.custom_responses[key] = value
 
-    def get_chat_history(self, limit=10):
-        return list(self.conversation_history)[-limit:]
+        # Conversation memory
+        self.conversation_history = []
+        self.max_history = 10
 
-    def _load_custom_responses(self):
-        if os.path.exists(self.custom_file):
-            try:
-                with open(self.custom_file, "r") as f:
-                    return json.load(f)
-            except:
-                return {}
-        return {}
+    def tokenize(self, text):
+        return re.findall(r'\w+', text.lower())
 
-    # ------------------ LOGIC ------------------
-    def detect_name_or_fav(self, text):
-        """Detect and store user name or favorite person"""
-        name_match = re.search(r"my name is (\w+)", text.lower())
-        crush_match = re.search(r"(\w+) is my crush", text.lower())
-
-        if name_match:
-            self.user_name = name_match.group(1).capitalize()
-            return f"Nice to meet you, {self.user_name}!"
-        elif crush_match:
-            self.favorite_person = crush_match.group(1).capitalize()
-            return f"Got it! I’ll remember {self.favorite_person} as someone special to you."
-        return None
-
-    def process(self, text):
-        if not text.strip():
-            return "Please say something."
-
+    def get_intent(self, text):
         text_lower = text.lower()
 
-        # Memory detection
-        memory_reply = self.detect_name_or_fav(text)
-        if memory_reply:
-            self.save_chat(text, memory_reply)
-            return memory_reply
-
-        # Check secret modes
-        for key, responses in self.secret_modes.items():
-            if key in text_lower:
-                reply = random.choice(responses)
-                self.save_chat(text, reply)
-                return reply
-
-        # Custom responses
+        # Check custom responses
         for pattern, response in self.custom_responses.items():
             if pattern.lower() in text_lower:
-                self.save_chat(text, response)
-                return response
+                return "custom", pattern
 
-        # Core intents
-        if any(word in text_lower for word in ["hi", "hello", "hey"]):
-            reply = random.choice(self.knowledge_base["greeting"])
-        elif any(word in text_lower for word in ["bye", "goodbye"]):
-            reply = random.choice(self.knowledge_base["farewell"])
-        elif any(word in text_lower for word in ["thanks", "thank you"]):
-            reply = random.choice(self.knowledge_base["thanks"])
-        elif "time" in text_lower:
-            reply = f"The current time is {datetime.datetime.now().strftime('%I:%M %p')}"
-        elif "date" in text_lower:
-            reply = f"Today is {datetime.datetime.now().strftime('%A, %d %B %Y')}"
-        elif "creator" in text_lower or "who made you" in text_lower:
-            reply = f"I was created by {self.creator_name}, a passionate young coder."
-        else:
-            reply = random.choice(self.knowledge_base["unknown"])
+        # Core intent detection
+        if any(word in text_lower for word in ["hi", "hello", "hey"]): return "greeting", None
+        if any(word in text_lower for word in ["bye", "goodbye", "see you"]): return "farewell", None
+        if any(word in text_lower for word in ["thanks", "thank you"]): return "thanks", None
+        if "joke" in text_lower or "funny" in text_lower: return "jokes", None
+        if "fact" in text_lower or "interesting" in text_lower: return "facts", None
+        if "time" in text_lower: return "time", None
+        if "date" in text_lower: return "date", None
+        if "weather" in text_lower or "forecast" in text_lower: return "weather", text
+        if "help" in text_lower: return "help", None
+        if "about" in text_lower or "who are you" in text_lower: return "about", None
+        if "music" in text_lower: return "music", None
+        if "movie" in text_lower or "film" in text_lower: return "movies", None
+        if "food" in text_lower or "eat" in text_lower: return "food", None
+        if "news" in text_lower: return "news", "general"
+        if "calculate" in text_lower or any(op in text_lower for op in ["+", "-", "*", "/"]): return "calculator", text
+        if "tell me about" in text_lower or "search" in text_lower: return "web_search", text
+        if any(word in text_lower for word in ["what", "who", "when", "where", "why", "how"]): return "question", text
+        return "unknown", None
 
-        self.save_chat(text, reply)
-        return reply
+    def calculate(self, expression):
+        try:
+            expr = expression.replace("^", "**").replace("plus", "+").replace("minus", "-")
+            result = eval(expr, {"__builtins__": {}}, {"math": math})
+            return f"The result is {result}"
+        except:
+            return "I couldn't calculate that. Please check your expression."
 
-    def add_custom_response(self, pattern, response):
-        self.custom_responses[pattern] = response
-        with open(self.custom_file, "w") as f:
-            json.dump(self.custom_responses, f)
-        return f"Added custom response for '{pattern}'."
+    def process(self, text):
+        if not text.strip(): return "I didn't catch that."
+        intent, data = self.get_intent(text)
 
-# For teaching
-def teach_ai(ai_engine, pattern, response):
-    return ai_engine.add_custom_response(pattern, response)
+        if intent == "greeting": return random.choice(self.knowledge_base["greeting"])
+        if intent == "farewell": return random.choice(self.knowledge_base["farewell"])
+        if intent == "thanks": return random.choice(self.knowledge_base["thanks"])
+        if intent == "jokes": return random.choice(self.knowledge_base["jokes"])
+        if intent == "facts": return random.choice(self.knowledge_base["facts"])
+        if intent == "time": return f"The current time is {datetime.datetime.now().strftime('%I:%M %p')}"
+        if intent == "date": return f"Today is {datetime.datetime.now().strftime('%A, %B %d, %Y')}"
+        if intent == "weather": return f"Weather info: {get_weather(data)}"
+        if intent == "help": return random.choice(self.knowledge_base["help"])
+        if intent == "about": return random.choice(self.knowledge_base["about"])
+        if intent == "music": return random.choice(self.knowledge_base["music"])
+        if intent == "movies": return random.choice(self.knowledge_base["movies"])
+        if intent == "food": return random.choice(self.knowledge_base["food"])
+        if intent == "news": return str(get_news(data))
+        if intent == "calculator": return self.calculate(data)
+        if intent == "web_search": return search_and_summarize(data)
+        if intent == "custom": return self.custom_responses[data]
+        return random.choice(self.knowledge_base["unknown"])
