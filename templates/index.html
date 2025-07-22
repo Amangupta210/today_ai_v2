@@ -52,7 +52,7 @@
   const sendBtn = document.getElementById("send-btn");
   const themeBtn = document.getElementById("theme-btn");
 
-  // 20+ Secret Romantic Keys
+  // Secret Romantic Keys
   const secretKeys = {
     sneha1: "Tum meri coffee ho... bina tumhare subah incomplete lagti hai ☕❤️",
     sneha2: "Aaj tum meri smile ki wajah banoge kya? 😊💖",
@@ -76,6 +76,12 @@
     sneha20: "Tum meri khwahishon ka permanent bookmark ho ❤️🔥"
   };
 
+  function getTime() {
+    const now = new Date();
+    return now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
+  }
+
+  // Add message to chat
   function addMessage(text, type = "ai", withTyping = false) {
     const msgDiv = document.createElement("div");
     msgDiv.classList.add("message", type === "user" ? "user-message" : "ai-message", "fade-in");
@@ -103,9 +109,14 @@
     chatBox.scrollTop = chatBox.scrollHeight;
   }
 
-  function getTime() {
-    const now = new Date();
-    return now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
+  // Typing indicator
+  function showTyping() {
+    const typingDiv = document.createElement("div");
+    typingDiv.classList.add("message", "ai-message", "typing-indicator");
+    typingDiv.innerHTML = `<span></span><span></span><span></span>`;
+    chatBox.appendChild(typingDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return typingDiv;
   }
 
   function handleSend() {
@@ -114,10 +125,13 @@
     addMessage(userText, "user");
     userInput.value = "";
 
+    const typingIndicator = showTyping();
+
     setTimeout(() => {
+      chatBox.removeChild(typingIndicator);
       const response = getAIResponse(userText);
-      addMessage(response, "ai", true); // Typing effect
-    }, 400);
+      addMessage(response, "ai", true);
+    }, 1000);
   }
 
   function getAIResponse(msg) {
