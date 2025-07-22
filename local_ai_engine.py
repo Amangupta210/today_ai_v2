@@ -444,5 +444,4 @@ def teach_ai(ai_engine, pattern, response):
     if success:
         return f"I've learned to respond to '{pattern}' with '{response}'."
     else:
-        return "I couldn't save that response. Please try again."            (added secert codes only name key --- 
-sneha name) 2 lines 3
+        return "I couldn't save that response. Please try again."
