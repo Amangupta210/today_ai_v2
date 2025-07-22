@@ -5,229 +5,92 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SNEAI - Your Intelligent Assistant</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Reset and base styles */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      transition: background 0.3s ease, color 0.3s ease;
-    }
-    .dark-theme { background-color: #121212; color: #f5f5f5; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body { display: flex; flex-direction: column; min-height: 100vh; background: #f8f9fa; color: #212529; transition: background 0.3s, color 0.3s; }
+    body.dark-theme { background: #121212; color: #f1f1f1; }
 
-    /* Container */
-    .container {
-      display: flex; flex-direction: column;
-      width: 100%; max-width: 500px;
-      height: 100vh; background: #fff;
-      border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-    .dark-theme .container { background: #1e1e1e; }
+    /* HEADER */
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #ccc; position: sticky; top: 0; background: inherit; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .logo { display: flex; align-items: center; gap: 8px; }
+    .logo h1 { font-size: 1.5rem; }
+    .tagline { font-size: 0.85rem; color: #666; }
 
-    /* Header */
-    .header {
-      display: flex; justify-content: space-between;
-      align-items: center; padding: 15px 20px;
-      background: #4f46e5; color: #fff;
-    }
-    .header .logo { display: flex; align-items: center; gap: 10px; }
-    .header .logo h1 { font-size: 1.5rem; font-weight: 700; }
-    .header .tagline { font-size: 0.9rem; opacity: 0.8; }
-    .header-controls button {
-      background: none; border: none; color: #fff;
-      font-size: 1.2rem; cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .header-controls button:hover { transform: scale(1.2); }
+    /* CHAT */
+    .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+    .message { display: flex; align-items: flex-end; gap: 8px; animation: fadeInUp 0.3s ease; }
+    @keyframes fadeInUp { from {opacity:0;transform:translateY(5px);} to {opacity:1;transform:translateY(0);} }
+    .message-content { padding: 10px 14px; border-radius: 14px; line-height: 1.4; font-size: 0.95rem; max-width: 80%; word-wrap: break-word; }
+    .user-message .message-content { background: #4a90e2; color: #fff; border-bottom-right-radius: 0; margin-left: auto; }
+    .ai-message .message-content { background: #e9ecef; border-bottom-left-radius: 0; display: flex; align-items: center; }
+    body.dark-theme .ai-message .message-content { background: #333; color: #f1f1f1; }
+    .ai-avatar { width: 32px; height: 32px; border-radius: 50%; background: #4a90e2; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .message-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right; }
 
-    /* Chat container */
-    .chat-container {
-      flex: 1; overflow-y: auto;
-      padding: 15px; scroll-behavior: smooth;
-      background: #fafafa;
-    }
-    .dark-theme .chat-container { background: #181818; }
-    #chat-box { display: flex; flex-direction: column; gap: 12px; }
+    /* INPUT */
+    .input-container { display: flex; gap: 8px; border-top: 1px solid #ccc; padding: 8px; background: inherit; position: sticky; bottom: 0; }
+    #user-input { flex: 1; padding: 10px 12px; border: 1px solid #aaa; border-radius: 12px; font-size: 1rem; outline: none; }
+    #send-btn { background: #4a90e2; color: white; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; font-size: 1.2rem; transition: background 0.3s; }
+    #send-btn:hover { background: #3b78c4; }
 
-    /* Messages */
-    .message {
-      max-width: 80%; padding: 10px 15px;
-      border-radius: 15px; word-wrap: break-word;
-      line-height: 1.4; position: relative;
-    }
-    .user-message {
-      background: #4f46e5; color: #fff;
-      align-self: flex-end; border-bottom-right-radius: 3px;
-    }
-    .ai-message {
-      background: #e5e7eb; align-self: flex-start;
-      border-bottom-left-radius: 3px;
-    }
-    .dark-theme .ai-message { background: #2c2c2c; }
-    .message-time {
-      font-size: 0.7rem; opacity: 0.7;
-      margin-top: 3px; text-align: right;
-    }
+    /* FAB MENU */
+    .fab-container { position: fixed; bottom: 80px; right: 20px; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .fab-btn { background: #4a90e2; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); transition: transform 0.2s; }
+    .fab-btn:hover { transform: scale(1.1); background: #3b78c4; }
+    .fab-options { display: none; flex-direction: column; gap: 6px; }
+    .fab-options.show { display: flex; }
 
-    /* Input container */
-    .input-container {
-      display: flex; padding: 10px;
-      background: #f1f1f1; border-top: 1px solid #ddd;
-    }
-    .dark-theme .input-container { background: #222; }
-    .input-container input {
-      flex: 1; padding: 10px;
-      border: none; border-radius: 20px;
-      outline: none; background: #fff;
-      font-size: 1rem;
-    }
-    .dark-theme .input-container input {
-      background: #333; color: #fff;
-    }
-    .input-container button {
-      background: #4f46e5; border: none; color: #fff;
-      margin-left: 10px; padding: 10px 15px;
-      border-radius: 50%; cursor: pointer;
-      transition: background 0.2s ease;
-    }
-    .input-container button:hover { background: #3730a3; }
+    /* MODAL */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10; }
+    .modal-content { background: #fff; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; }
+    body.dark-theme .modal-content { background: #333; color: #f1f1f1; }
+    .modal .close { float: right; font-size: 1.4rem; cursor: pointer; }
 
-    /* Features */
-    .features-container {
-      display: flex; flex-wrap: wrap;
-      padding: 10px; background: #fafafa;
-      border-top: 1px solid #ddd; gap: 10px;
-      justify-content: center;
-    }
-    .dark-theme .features-container { background: #1b1b1b; }
-    .feature-card {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      width: 80px; height: 80px;
-      background: #fff; border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      cursor: pointer; transition: transform 0.2s ease, background 0.3s ease;
-      text-align: center; font-size: 0.8rem; color: #4f46e5;
-    }
-    .dark-theme .feature-card { background: #333; color: #ddd; }
-    .feature-card:hover { transform: scale(1.05); background: #f3f3f3; }
-    .feature-card i { font-size: 1.4rem; margin-bottom: 5px; }
+    footer { text-align: center; font-size: 0.85rem; padding: 8px; color: #666; }
+    body.dark-theme footer { color: #aaa; }
 
-    /* Modal */
-    .modal {
-      display: none; position: fixed;
-      z-index: 1000; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center; align-items: center;
-    }
-    .modal-content {
-      background: #fff; padding: 20px;
-      border-radius: 10px; max-width: 400px;
-      width: 90%; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      position: relative;
-    }
-    .dark-theme .modal-content { background: #222; color: #fff; }
-    .modal .close {
-      position: absolute; top: 10px; right: 15px;
-      font-size: 1.4rem; cursor: pointer; color: #444;
-    }
-    .dark-theme .modal .close { color: #bbb; }
-
-    /* Typing indicator */
-    .typing-dots { display: flex; gap: 4px; }
-    .typing-dots span {
-      width: 6px; height: 6px;
-      background: #666; border-radius: 50%;
-      animation: blink 1.4s infinite both;
-    }
-    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes blink { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-    /* Footer */
-    footer {
-      padding: 10px; text-align: center;
-      font-size: 0.8rem; background: #f1f1f1;
-      border-top: 1px solid #ddd;
-    }
-    .dark-theme footer { background: #1a1a1a; }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-      .container { max-width: 100%; height: 100vh; border-radius: 0; }
-      .feature-card { width: 70px; height: 70px; }
-      .header .logo h1 { font-size: 1.2rem; }
-    }
-    @media (max-width: 480px) {
-      .feature-card { width: 65px; height: 65px; font-size: 0.7rem; }
-      .input-container input { font-size: 0.9rem; }
+    @media (max-width: 500px) {
+      .message-content { max-width: 90%; font-size: 0.9rem; }
+      #user-input { font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">
-        <i class="fas fa-robot"></i>
-        <h1>SNEAI</h1>
-        <span class="tagline">Your Intelligent Assistant</span>
-      </div>
-      <div class="header-controls">
-        <button class="control-btn" onclick="clearChat()" title="Clear Chat">
-          <i class="fas fa-trash-alt"></i>
-        </button>
-        <button class="control-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
-          <i class="fas fa-moon" id="theme-icon"></i>
-        </button>
-      </div>
-    </div>
-    
-    <div class="chat-container">
-      <div id="chat-box"></div>
-    </div>
-    
-    <div class="input-container">
-      <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
-      <button id="send-btn" onclick="sendMessage()" title="Send Message (Enter)">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-    
-    <div class="features-container">
-      <div class="feature-card" onclick="quickPrompt('Tell me a joke')"><i class="fas fa-laugh"></i><span>Joke</span></div>
-      <div class="feature-card" onclick="quickPrompt('Tell me an interesting fact')"><i class="fas fa-lightbulb"></i><span>Fact</span></div>
-      <div class="feature-card" onclick="quickPrompt('What\\'s the weather in New York?')"><i class="fas fa-cloud-sun"></i><span>Weather</span></div>
-      <div class="feature-card" onclick="quickPrompt('Search the web for artificial intelligence')"><i class="fas fa-search"></i><span>Web Search</span></div>
-      <div class="feature-card" onclick="quickPrompt('Search Wikipedia for quantum physics')"><i class="fas fa-book"></i><span>Wikipedia</span></div>
-      <div class="feature-card" onclick="showTeachModal()"><i class="fas fa-brain"></i><span>Teach AI</span></div>
-      <div class="feature-card" id="voice-card" onclick="startVoiceRecognition()"><i class="fas fa-microphone"></i><span>Speak</span></div>
+  <div class="header">
+    <div class="logo">
+      <i class="fas fa-robot"></i>
+      <h1>SNEAI</h1>
+      <span class="tagline">Your Intelligent Assistant</span>
     </div>
   </div>
 
-  <!-- Teach AI Modal -->
+  <div class="chat-container" id="chat-box"></div>
+
+  <div class="input-container">
+    <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
+    <button id="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+  </div>
+
+  <!-- Floating Action Button -->
+  <div class="fab-container">
+    <div class="fab-options" id="fab-options">
+      <button class="fab-btn" onclick="startVoiceRecognition()" title="Speak"><i class="fas fa-microphone"></i></button>
+      <button class="fab-btn" onclick="toggleTheme()" title="Theme"><i class="fas fa-moon"></i></button>
+      <button class="fab-btn" onclick="showTeachModal()" title="Teach AI"><i class="fas fa-brain"></i></button>
+      <button class="fab-btn" onclick="clearChat()" title="Clear Chat"><i class="fas fa-trash"></i></button>
+    </div>
+    <button class="fab-btn" onclick="toggleFab()"><i class="fas fa-plus"></i></button>
+  </div>
+
+  <!-- Teach Modal -->
   <div id="teach-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeTeachModal()">&times;</span>
       <h2>Teach SNEAI</h2>
-      <p>Add custom responses to make your AI assistant smarter!</p>
-      <div class="form-group">
-        <label for="pattern">When I say (pattern):</label>
-        <input type="text" id="pattern" placeholder="e.g., What's your favorite color?">
-      </div>
-      <div class="form-group">
-        <label for="response">You should respond with:</label>
-        <textarea id="response" placeholder="e.g., My favorite color is blue!"></textarea>
-      </div>
-      <button onclick="teachAI()">Teach SNEAI</button>
+      <input id="pattern" placeholder="When I say..." style="width:100%;margin-bottom:8px;">
+      <textarea id="response" placeholder="SNEAI replies with..." style="width:100%;height:80px;"></textarea>
+      <button onclick="teachAI()" style="margin-top:10px; padding:8px 12px; background:#4a90e2; color:white; border:none; border-radius:5px; cursor:pointer;">Teach</button>
     </div>
   </div>
 
@@ -236,150 +99,87 @@
   <script>
     let chatHistory = [];
     let recognition, synth, isSpeechEnabled = false;
+    let learnedResponses = JSON.parse(localStorage.getItem('sneai_custom_responses') || '{}');
+
+    function toggleFab() {
+      document.getElementById('fab-options').classList.toggle('show');
+    }
 
     function initSpeechRecognition() {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.continuous = false;
-        recognition.interimResults = false;
         recognition.lang = 'en-US';
-        recognition.onresult = (event) => {
-          document.getElementById("user-input").value = event.results[0][0].transcript;
-          sendMessage();
-        };
-        recognition.onerror = (e) => addMessage("Speech recognition error: " + e.error, 'system');
-        recognition.onend = () => document.getElementById('voice-card').classList.remove('listening');
+        recognition.onresult = e => { document.getElementById("user-input").value = e.results[0][0].transcript; sendMessage(); };
         isSpeechEnabled = true;
-      } else {
-        document.getElementById('voice-card').style.opacity = '0.5';
-        document.getElementById('voice-card').title = 'Speech not supported';
       }
       if ('speechSynthesis' in window) synth = window.speechSynthesis;
     }
 
     function startVoiceRecognition() {
-      if (!isSpeechEnabled) { addMessage("Speech not supported.", 'system'); return; }
-      recognition.start(); document.getElementById('voice-card').classList.add('listening'); addMessage("Listening...", 'system');
+      if (!isSpeechEnabled) return addMessage("Voice recognition not supported.", 'ai');
+      recognition.start(); addMessage("Listening...", 'ai');
     }
 
-    function speakResponse(text) {
-      if (!synth) return;
-      synth.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1; utterance.pitch = 1; utterance.volume = 1;
-      const voices = synth.getVoices();
-      const femaleVoice = voices.find(voice => voice.name.includes('female') || voice.name.includes('Female'));
-      if (femaleVoice) utterance.voice = femaleVoice;
-      synth.speak(utterance);
-    }
+    function speakResponse(text) { if (!synth) return; synth.cancel(); synth.speak(new SpeechSynthesisUtterance(text)); }
 
-    document.getElementById("user-input").addEventListener("keyup", function(e) { if (e.key === "Enter") sendMessage(); });
-
-    function getCurrentTime() {
-      const now = new Date(); let hours = now.getHours(), minutes = now.getMinutes();
-      const ampm = hours >= 12 ? 'PM' : 'AM'; hours = hours % 12 || 12;
-      return hours + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
-    }
-
-    async function sendMessage() {
+    function sendMessage() {
       const input = document.getElementById("user-input").value.trim();
       if (!input) return;
-      addMessage(input, 'user'); chatHistory.push({role: 'user', content: input});
-      document.getElementById("user-input").value = ""; showTypingIndicator();
-
-      setTimeout(() => { // Simulated AI response
-        removeTypingIndicator();
-        const response = "This is a sample AI response for: " + input;
-        addMessage(response, 'ai'); chatHistory.push({role: 'ai', content: response});
-        saveChatHistory(); speakResponse(response);
-      }, 1000);
+      addMessage(input, 'user');
+      document.getElementById("user-input").value = "";
+      setTimeout(() => {
+        let reply = learnedResponses[input.toLowerCase()] || `This is a sample AI response for: ${input}`;
+        addMessage(reply, 'ai');
+        speakResponse(reply);
+        saveChatHistory();
+      }, 700);
     }
 
     function addMessage(text, sender) {
       const chatBox = document.getElementById("chat-box");
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${sender}-message`;
-      const contentDiv = document.createElement("div");
-      contentDiv.className = "message-content";
-      const messagePara = document.createElement("p");
-      messagePara.innerHTML = text;
-      contentDiv.appendChild(messagePara);
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "message-time"; timeDiv.textContent = getCurrentTime();
-      messageDiv.appendChild(contentDiv); messageDiv.appendChild(timeDiv);
-      chatBox.appendChild(messageDiv);
+      const msg = document.createElement("div");
+      msg.className = `message ${sender}-message`;
+      msg.innerHTML = sender === 'ai'
+        ? `<div class="ai-avatar">🤖</div><div class="message-content"><p>${text}</p><div class="message-time">${getTime()}</div></div>`
+        : `<div class="message-content"><p>${text}</p><div class="message-time">${getTime()}</div></div>`;
+      chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
+      chatHistory.push({role: sender, content: text});
     }
 
-    function showTypingIndicator() {
-      const chatBox = document.getElementById("chat-box");
-      const typingDiv = document.createElement("div");
-      typingDiv.className = "message ai-message typing-indicator";
-      typingDiv.id = "typing-indicator";
-      const contentDiv = document.createElement("div");
-      contentDiv.className = "message-content";
-      const dots = document.createElement("div");
-      dots.className = "typing-dots";
-      for (let i = 0; i < 3; i++) dots.appendChild(document.createElement("span"));
-      contentDiv.appendChild(dots);
-      typingDiv.appendChild(contentDiv);
-      chatBox.appendChild(typingDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+    function getTime() {
+      const now = new Date(), h = now.getHours(), m = now.getMinutes();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      return `${h % 12 || 12}:${m<10?'0'+m:m} ${ampm}`;
     }
 
-    function removeTypingIndicator() {
-      const typingIndicator = document.getElementById("typing-indicator");
-      if (typingIndicator) typingIndicator.remove();
-    }
-
-    function quickPrompt(text) {
-      document.getElementById("user-input").value = text;
-      sendMessage();
+    function clearChat() { document.getElementById("chat-box").innerHTML = ''; chatHistory = []; saveChatHistory(); }
+    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
+    function teachAI() {
+      const p = document.getElementById("pattern").value.trim().toLowerCase();
+      const r = document.getElementById("response").value.trim();
+      if (!p || !r) return alert("Both fields required!");
+      learnedResponses[p] = r;
+      localStorage.setItem('sneai_custom_responses', JSON.stringify(learnedResponses));
+      addMessage(`Learned: "${p}" → "${r}"`, 'ai');
+      closeTeachModal();
     }
 
     function showTeachModal() { document.getElementById("teach-modal").style.display = "flex"; }
     function closeTeachModal() { document.getElementById("teach-modal").style.display = "none"; }
-    async function teachAI() {
-      const pattern = document.getElementById("pattern").value.trim();
-      const response = document.getElementById("response").value.trim();
-      if (!pattern || !response) { alert("Both fields required!"); return; }
-      addMessage(`Learned: "${pattern}" -> "${response}"`, 'ai');
-      closeTeachModal();
-    }
 
-    function saveChatHistory() {
-      if (chatHistory.length > 100) chatHistory = chatHistory.slice(-100);
-      localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory));
-    }
+    function saveChatHistory() { localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory.slice(-100))); }
     function loadChatHistory() {
-      const savedHistory = localStorage.getItem('sneai_chat_history');
-      if (savedHistory) {
-        chatHistory = JSON.parse(savedHistory);
-        chatHistory.slice(-10).forEach(msg => addMessage(msg.content, msg.role));
-      }
+      const saved = JSON.parse(localStorage.getItem('sneai_chat_history') || "[]");
+      chatHistory = saved; for (const m of chatHistory) addMessage(m.content, m.role);
     }
 
-    function clearChat() {
-      document.getElementById("chat-box").innerHTML = '';
-      chatHistory = []; localStorage.removeItem('sneai_chat_history');
-      const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant. Ask me anything!";
-      addMessage(welcomeMessage, 'ai'); chatHistory.push({role: 'ai', content: welcomeMessage});
-    }
-
-    function toggleTheme() {
-      document.body.classList.toggle('dark-theme');
-      const isDark = document.body.classList.contains('dark-theme');
-      document.getElementById("theme-icon").className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-      localStorage.setItem('sneai_theme', isDark ? 'dark' : 'light');
-    }
-
-    function loadTheme() {
-      const savedTheme = localStorage.getItem('sneai_theme');
-      if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-      document.getElementById("theme-icon").className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    window.onload = function() { loadTheme(); loadChatHistory(); initSpeechRecognition(); };
+    document.getElementById("user-input").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
+    document.addEventListener("DOMContentLoaded", () => {
+      loadChatHistory(); initSpeechRecognition();
+      if (chatHistory.length === 0) addMessage("Hello! I'm SNEAI, your intelligent assistant. Ask me anything!", 'ai');
+    });
+    window.onclick = e => { if (e.target == document.getElementById("teach-modal")) closeTeachModal(); }
   </script>
 </body>
 </html>
