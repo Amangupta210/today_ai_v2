@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SNEAI Assistant</title>
+  <title>SNEAI - Your Intelligent Assistant</title>
   <link rel="stylesheet" href="/static/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-  <meta name="description" content="SNEAI Assistant - A local AI assistant that works without requiring external API calls">
+  <meta name="description" content="SNEAI - Your intelligent assistant with real-time web search capabilities">
   <meta property="og:title" content="SNEAI Assistant">
-  <meta property="og:description" content="A local AI assistant with modern UI/UX design">
+  <meta property="og:description" content="An intelligent assistant with real-time search capabilities">
 </head>
 <body>
   <div class="container">
     <div class="header">
       <div class="logo">
-        <i class="fas fa-robot"></i>
+        <i class="fas fa-brain"></i>
         <h1>SNEAI</h1>
         <span class="tagline">Your Intelligent Assistant</span>
       </div>
@@ -31,12 +34,7 @@
     
     <div class="chat-container">
       <div id="chat-box">
-        <div class="message ai-message">
-          <div class="message-content">
-            <p>Hello! I'm SNEAI, your local AI assistant. How can I help you today?</p>
-          </div>
-          <div class="message-time">Just now</div>
-        </div>
+        <!-- Messages will appear here -->
       </div>
     </div>
     
@@ -52,7 +50,7 @@
         <i class="fas fa-laugh"></i>
         <span>Joke</span>
       </div>
-      <div class="feature-card" onclick="quickPrompt('Tell me a fact')">
+      <div class="feature-card" onclick="quickPrompt('Tell me an interesting fact')">
         <i class="fas fa-lightbulb"></i>
         <span>Fact</span>
       </div>
@@ -60,13 +58,13 @@
         <i class="fas fa-cloud-sun"></i>
         <span>Weather</span>
       </div>
-      <div class="feature-card" onclick="quickPrompt('Latest news')">
-        <i class="fas fa-newspaper"></i>
-        <span>News</span>
-      </div>
-      <div class="feature-card" onclick="quickPrompt('Tell me about artificial intelligence')">
+      <div class="feature-card" onclick="quickPrompt('Search the web for artificial intelligence')">
         <i class="fas fa-search"></i>
-        <span>Search</span>
+        <span>Web Search</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Search Wikipedia for quantum physics')">
+        <i class="fas fa-book"></i>
+        <span>Wikipedia</span>
       </div>
       <div class="feature-card" onclick="showTeachModal()">
         <i class="fas fa-brain"></i>
@@ -97,7 +95,7 @@
     </div>
   </div>
 
-  <footer>Created by Aman Gupta (2025)</footer>
+  <footer>Created by Aman Gupta (2025) | Enhanced by Abhay</footer>
 
   <script>
     // Initialize chat history array
@@ -247,6 +245,11 @@
           const mainContent = data.reply.split('\n\n—')[0];
           speakResponse(mainContent);
         }
+        
+        // Add command suggestions based on the response
+        if (data.reply.includes("I searched for") || data.reply.includes("According to")) {
+          addCommandSuggestions();
+        }
       } catch (error) {
         console.error('Error:', error);
         removeTypingIndicator();
@@ -295,6 +298,16 @@
       // Convert *italic* text
       text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
       
+      // Format source citations
+      text = text.replace(/Source: (https?:\/\/[^\s]+)/g, 
+        '<div class="source-citation">Source: <a href="$1" target="_blank" rel="noopener noreferrer">$1</a></div>'
+      );
+      
+      // Format search results
+      text = text.replace(/(\d+)\. (.*?)(?=\n|$)/g, 
+        '<div class="search-result"><div class="search-result-title">$1. $2</div></div>'
+      );
+      
       // Convert newlines to <br>
       text = text.replace(/\n/g, '<br>');
       
@@ -320,11 +333,11 @@
       
       // Add a random thinking message for web searches
       const thinkingMessages = [
-        "Searching the web...",
-        "Looking that up for you...",
-        "Gathering information...",
+        "Searching the web for you...",
+        "Looking that up in real-time...",
+        "Gathering information from multiple sources...",
         "Processing your request...",
-        "Analyzing data..."
+        "Analyzing data from the web..."
       ];
       
       const messageText = document.createElement("p");
@@ -360,6 +373,35 @@
     
     function closeTeachModal() {
       document.getElementById("teach-modal").style.display = "none";
+    }
+    
+    function addCommandSuggestions() {
+      const chatBox = document.getElementById("chat-box");
+      const lastMessage = chatBox.lastElementChild;
+      
+      if (lastMessage && lastMessage.classList.contains('ai-message')) {
+        const suggestionsDiv = document.createElement("div");
+        suggestionsDiv.className = "command-suggestions";
+        
+        const suggestions = [
+          "Tell me more about this",
+          "Explain in simpler terms",
+          "Search Wikipedia instead",
+          "Find more recent information"
+        ];
+        
+        suggestions.forEach(suggestion => {
+          const suggestionSpan = document.createElement("span");
+          suggestionSpan.className = "command-suggestion";
+          suggestionSpan.textContent = suggestion;
+          suggestionSpan.onclick = function() {
+            quickPrompt(suggestion);
+          };
+          suggestionsDiv.appendChild(suggestionSpan);
+        });
+        
+        lastMessage.querySelector('.message-content').appendChild(suggestionsDiv);
+      }
     }
     
     async function teachAI() {
@@ -423,8 +465,8 @@
         try {
           chatHistory = JSON.parse(savedHistory);
           
-          // Display up to last 20 messages
-          const recentMessages = chatHistory.slice(-20);
+          // Display up to last 10 messages for cleaner interface
+          const recentMessages = chatHistory.slice(-10);
           for (const msg of recentMessages) {
             addMessage(msg.content, msg.role);
           }
@@ -435,7 +477,7 @@
       }
     }
     
-    // Clear chat history
+    // Clear chat
     function clearChat() {
       const chatBox = document.getElementById("chat-box");
       chatBox.innerHTML = '';
@@ -443,8 +485,9 @@
       localStorage.removeItem('sneai_chat_history');
       
       // Add welcome message
-      addMessage("Hello! I'm SNEAI, your local AI assistant. How can I help you today?", 'ai');
-      chatHistory.push({role: 'ai', content: "Hello! I'm SNEAI, your local AI assistant. How can I help you today?"});
+      const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities. Ask me anything, and I'll do my best to help you!";
+      addMessage(welcomeMessage, 'ai');
+      chatHistory.push({role: 'ai', content: welcomeMessage});
     }
     
     // Theme toggle functionality
@@ -493,7 +536,7 @@
       
       // If no history, show welcome message
       if (chatHistory.length === 0) {
-        const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant. I can search the web, check weather, provide news updates, and much more. How can I help you today?";
+        const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities. Ask me anything, and I'll do my best to help you!";
         addMessage(welcomeMessage, 'ai');
         chatHistory.push({role: 'ai', content: welcomeMessage});
       }

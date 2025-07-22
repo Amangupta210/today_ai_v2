@@ -196,25 +196,54 @@ def get_static_news(topic="general", count=3):
     else:
         return static_news["general"][:count]
 
-def search_and_summarize(query):
-    """Search for information and summarize results"""
+def search_and_summarize(query, search_type='auto'):
+    """Search for information and summarize results based on user preference"""
     try:
-        # Try Wikipedia first with a shorter timeout
-        wiki_result = get_wikipedia_summary(query, sentences=2)
-        if wiki_result:
-            return f"According to Wikipedia: {wiki_result['summary']}\nSource: {wiki_result['url']}"
+        results = []
+        sources = []
         
-        # Fall back to search results with fewer results for speed
-        search_results = get_search_results(query, num_results=3)
-        if search_results:
-            # Combine the results
-            combined_info = "Based on my search results:\n\n"
-            for i, result in enumerate(search_results[:2]):
-                combined_info += f"{result['snippet']}\n"
+        # Determine search strategy based on user preference
+        if search_type == 'wiki' or search_type == 'auto':
+            # Try Wikipedia
+            wiki_result = get_wikipedia_summary(query, sentences=3)
+            if wiki_result:
+                results.append(wiki_result['summary'])
+                sources.append(f"Wikipedia: {wiki_result['url']}")
+                
+                # If user specifically asked for wiki only, return just that
+                if search_type == 'wiki':
+                    return f"According to Wikipedia:\n\n{wiki_result['summary']}\n\nSource: {wiki_result['url']}"
+        
+        # Get web search results
+        if search_type == 'web' or search_type == 'auto':
+            search_results = get_search_results(query, num_results=4)
+            if search_results:
+                for result in search_results[:3]:
+                    results.append(result['snippet'])
+                    if result['url']:
+                        sources.append(result['url'])
+                
+                # If user specifically asked for web only, return just that
+                if search_type == 'web':
+                    combined_info = "Based on web search results:\n\n"
+                    for i, result in enumerate(search_results[:3]):
+                        combined_info += f"{i+1}. {result['snippet']}\n"
+                    if sources:
+                        combined_info += "\nSources:\n" + "\n".join(sources[:3])
+                    return combined_info
+        
+        # Combine all results if we have any
+        if results:
+            combined_info = f"Here's what I found about '{query}':\n\n"
+            for i, result in enumerate(results[:4]):
+                combined_info += f"{result}\n\n"
+            
+            if sources:
+                combined_info += "Sources:\n" + "\n".join(sources[:3])
             
             return combined_info
         
         return None
     except Exception as e:
         print(f"Error in search_and_summarize: {e}")
-        return "I tried to search for information, but encountered a technical issue. Let me answer based on what I already know."
+        return "I tried to search for information in real-time, but encountered a technical issue. Please try a different query."

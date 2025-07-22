@@ -399,12 +399,19 @@ class LocalAIEngine:
             return self.calculate(data)
             
         elif intent == "web_search":
-            # Start a thread to search the web
-            result = search_and_summarize(data)
+            # Determine search type preference
+            search_type = 'auto'
+            if "wikipedia" in text.lower() or "wiki" in text.lower():
+                search_type = 'wiki'
+            elif "web" in text.lower() or "internet" in text.lower():
+                search_type = 'web'
+                
+            # Search based on user preference
+            result = search_and_summarize(data, search_type)
             if result:
                 return result
             else:
-                return f"I searched for information about '{data}' but couldn't find relevant results."
+                return f"I searched for information about '{data}' but couldn't find relevant results. Try rephrasing your query."
             
         elif intent == "question":
             # First try to answer from our knowledge base
