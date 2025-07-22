@@ -1,35 +1,35 @@
-/* Modern Neomorphic UI Design for SNEAI */
+/* Vibrant and Cozy UI Design for SNEAI - Inspired by Grok */
 :root {
-  /* Main color scheme */
-  --primary-color: #6c5ce7;
-  --secondary-color: #a29bfe;
-  --accent-color: #fd79a8;
-  --text-color: #2d3436;
-  --bg-color: #f9f9f9;
+  /* Vibrant color scheme */
+  --primary-color: #7f5af0;
+  --secondary-color: #2cb67d;
+  --accent-color: #ff8e3c;
+  --text-color: #16161a;
+  --bg-color: #fffffe;
   --card-bg: #ffffff;
-  --border-color: #dfe6e9;
+  --border-color: #e0e0e0;
   --shadow-color: rgba(0, 0, 0, 0.1);
-  --user-msg-bg: #e9f3ff;
+  --user-msg-bg: #e2f0ff;
   --ai-msg-bg: #f0f7ff;
   --hover-color: #f1f2f6;
-  --neomorphic-light: rgba(255, 255, 255, 0.8);
-  --neomorphic-shadow: rgba(174, 174, 192, 0.4);
+  --gradient-start: #7f5af0;
+  --gradient-end: #2cb67d;
 }
 
 .dark-theme {
-  --primary-color: #6c5ce7;
-  --secondary-color: #a29bfe;
-  --accent-color: #fd79a8;
-  --text-color: #f1f2f6;
-  --bg-color: #18191a;
-  --card-bg: #242526;
-  --border-color: #3a3b3c;
+  --primary-color: #7f5af0;
+  --secondary-color: #2cb67d;
+  --accent-color: #ff8e3c;
+  --text-color: #fffffe;
+  --bg-color: #16161a;
+  --card-bg: #242629;
+  --border-color: #383a3f;
   --shadow-color: rgba(0, 0, 0, 0.3);
-  --user-msg-bg: #3a3f44;
-  --ai-msg-bg: #2d3748;
-  --hover-color: #3a4556;
-  --neomorphic-light: rgba(255, 255, 255, 0.05);
-  --neomorphic-shadow: rgba(0, 0, 0, 0.5);
+  --user-msg-bg: #463d97;
+  --ai-msg-bg: #2a2b31;
+  --hover-color: #383a3f;
+  --gradient-start: #7f5af0;
+  --gradient-end: #2cb67d;
 }
 
 * {
@@ -40,7 +40,7 @@
 }
 
 body {
-  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
@@ -58,18 +58,16 @@ body {
   height: calc(100vh - 60px);
 }
 
-/* Neomorphic Header */
+/* Vibrant Header with Gradient */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px;
   margin-bottom: 30px;
-  border-radius: 20px;
-  background: var(--bg-color);
-  box-shadow: 
-    8px 8px 16px var(--neomorphic-shadow),
-    -8px -8px 16px var(--neomorphic-light);
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  box-shadow: 0 8px 20px rgba(127, 90, 240, 0.2);
   position: relative;
   overflow: hidden;
 }
@@ -81,8 +79,8 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent, var(--secondary-color), transparent);
-  opacity: 0.1;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0.3;
   z-index: 0;
 }
 
@@ -96,31 +94,29 @@ body {
 
 .logo i {
   font-size: 2.5rem;
-  color: var(--primary-color);
-  background: var(--bg-color);
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
   width: 60px;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  box-shadow: 
-    4px 4px 8px var(--neomorphic-shadow),
-    -4px -4px 8px var(--neomorphic-light);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
 }
 
 .logo h1 {
   font-size: 2.2rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: white;
   margin-bottom: 0;
   letter-spacing: 1px;
 }
 
 .logo .tagline {
   font-size: 0.9rem;
-  color: var(--text-color);
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.9);
   font-style: italic;
   position: absolute;
   bottom: -1.2rem;
@@ -135,10 +131,10 @@ body {
 }
 
 .control-btn {
-  background: var(--bg-color);
+  background: rgba(255, 255, 255, 0.2);
   border: none;
   font-size: 1.2rem;
-  color: var(--text-color);
+  color: white;
   cursor: pointer;
   width: 45px;
   height: 45px;
@@ -146,24 +142,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    4px 4px 8px var(--neomorphic-shadow),
-    -4px -4px 8px var(--neomorphic-light);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
   transition: all 0.3s ease;
 }
 
 .control-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 
-    6px 6px 12px var(--neomorphic-shadow),
-    -6px -6px 12px var(--neomorphic-light);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .control-btn:active {
   transform: translateY(0);
-  box-shadow: 
-    inset 2px 2px 5px var(--neomorphic-shadow),
-    inset -2px -2px 5px var(--neomorphic-light);
 }
 
 /* Chat Container */
@@ -171,13 +161,12 @@ body {
   flex: 1;
   overflow: hidden;
   position: relative;
-  border-radius: 20px;
-  background: var(--bg-color);
-  box-shadow: 
-    8px 8px 16px var(--neomorphic-shadow),
-    -8px -8px 16px var(--neomorphic-light);
+  border-radius: 16px;
+  background: var(--card-bg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   margin-bottom: 30px;
   padding: 5px;
+  border: 1px solid var(--border-color);
 }
 
 #chat-box {
@@ -228,9 +217,7 @@ body {
   background-color: var(--user-msg-bg);
   margin-left: auto;
   border-bottom-right-radius: 4px;
-  box-shadow: 
-    3px 3px 6px var(--neomorphic-shadow),
-    -1px -1px 3px var(--neomorphic-light);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .ai-message {
@@ -238,9 +225,7 @@ body {
   background-color: var(--ai-msg-bg);
   margin-right: auto;
   border-bottom-left-radius: 4px;
-  box-shadow: 
-    3px 3px 6px var(--neomorphic-shadow),
-    -1px -1px 3px var(--neomorphic-light);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
 .message-content {
@@ -261,14 +246,14 @@ body {
 
 /* Message Content Styling */
 .message-content a {
-  color: var(--accent-color);
+  color: var(--primary-color);
   text-decoration: none;
-  border-bottom: 1px dotted var(--accent-color);
+  border-bottom: 1px dotted var(--primary-color);
   transition: all 0.2s;
 }
 
 .message-content a:hover {
-  border-bottom: 1px solid var(--accent-color);
+  border-bottom: 1px solid var(--primary-color);
   opacity: 0.8;
 }
 
@@ -296,7 +281,7 @@ body {
   border-radius: 50%;
   display: inline-block;
   opacity: 0.6;
-  animation: pulse 1.5s infinite ease-in-out;
+  animation: pulse 1.5s infinite ease-in-out both;
 }
 
 .typing-dots span:nth-child(2) {
@@ -323,22 +308,19 @@ body {
 #user-input {
   flex: 1;
   padding: 18px 25px;
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: 25px;
   font-size: 1rem;
-  background-color: var(--bg-color);
+  background-color: var(--card-bg);
   color: var(--text-color);
-  box-shadow: 
-    inset 4px 4px 8px var(--neomorphic-shadow),
-    inset -4px -4px 8px var(--neomorphic-light);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
 }
 
 #user-input:focus {
   outline: none;
-  box-shadow: 
-    inset 6px 6px 10px var(--neomorphic-shadow),
-    inset -6px -6px 10px var(--neomorphic-light);
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 20px rgba(127, 90, 240, 0.15);
 }
 
 #send-btn {
@@ -346,7 +328,7 @@ body {
   height: 55px;
   border-radius: 50%;
   border: none;
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   color: white;
   font-size: 1.2rem;
   cursor: pointer;
@@ -354,14 +336,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    4px 4px 8px var(--neomorphic-shadow),
-    -4px -4px 8px var(--neomorphic-light);
+  box-shadow: 0 4px 15px rgba(127, 90, 240, 0.2);
 }
 
 #send-btn:hover {
   transform: scale(1.05);
-  background-color: var(--secondary-color);
+  box-shadow: 0 6px 20px rgba(127, 90, 240, 0.3);
 }
 
 #send-btn:active {
@@ -377,8 +357,8 @@ body {
 }
 
 .feature-card {
-  background-color: var(--bg-color);
-  border-radius: 15px;
+  background: var(--card-bg);
+  border-radius: 16px;
   padding: 20px 15px;
   display: flex;
   flex-direction: column;
@@ -386,9 +366,8 @@ body {
   gap: 12px;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 
-    5px 5px 10px var(--neomorphic-shadow),
-    -5px -5px 10px var(--neomorphic-light);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
   position: relative;
   overflow: hidden;
 }
@@ -399,36 +378,23 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
-}
-
-.feature-card:hover::before {
-  transform: translateX(100%);
+  height: 5px;
+  background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
 }
 
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 
-    8px 8px 16px var(--neomorphic-shadow),
-    -8px -8px 16px var(--neomorphic-light);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
 .feature-card i {
   font-size: 1.8rem;
   color: var(--primary-color);
-  background: var(--bg-color);
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  box-shadow: 
-    3px 3px 6px var(--neomorphic-shadow),
-    -3px -3px 6px var(--neomorphic-light);
+  transition: all 0.3s;
+}
+
+.feature-card:hover i {
+  transform: scale(1.1);
 }
 
 .feature-card span {
@@ -463,14 +429,12 @@ body {
 }
 
 .modal-content {
-  background-color: var(--bg-color);
+  background-color: var(--card-bg);
   padding: 30px;
   border-radius: 20px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 
-    8px 8px 16px var(--neomorphic-shadow),
-    -8px -8px 16px var(--neomorphic-light);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
   position: relative;
   animation: modalFadeIn 0.3s;
 }
@@ -493,15 +457,12 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--bg-color);
-  box-shadow: 
-    3px 3px 6px var(--neomorphic-shadow),
-    -3px -3px 6px var(--neomorphic-light);
   transition: all 0.3s;
 }
 
 .close:hover {
   transform: rotate(90deg);
+  color: var(--primary-color);
 }
 
 .modal h2 {
@@ -525,14 +486,19 @@ body {
 .form-group textarea {
   width: 100%;
   padding: 15px;
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: 1rem;
   background-color: var(--bg-color);
   color: var(--text-color);
-  box-shadow: 
-    inset 3px 3px 6px var(--neomorphic-shadow),
-    inset -3px -3px 6px var(--neomorphic-light);
+  transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(127, 90, 240, 0.2);
 }
 
 .form-group textarea {
@@ -541,7 +507,7 @@ body {
 }
 
 .modal button {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   color: white;
   border: none;
   padding: 15px 25px;
@@ -549,14 +515,12 @@ body {
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 
-    4px 4px 8px var(--neomorphic-shadow),
-    -4px -4px 8px var(--neomorphic-light);
+  box-shadow: 0 4px 15px rgba(127, 90, 240, 0.2);
 }
 
 .modal button:hover {
-  background-color: var(--secondary-color);
   transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(127, 90, 240, 0.3);
 }
 
 .modal button:active {
@@ -606,8 +570,6 @@ footer {
   
   .feature-card i {
     font-size: 1.5rem;
-    width: 40px;
-    height: 40px;
   }
   
   .feature-card span {
@@ -622,17 +584,6 @@ footer {
     width: 50px;
     height: 50px;
   }
-}
-
-/* Animations */
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.logo i {
-  animation: float 3s ease-in-out infinite;
 }
 
 /* Source Citation */
@@ -666,22 +617,20 @@ footer {
 }
 
 .command-suggestion {
-  background-color: var(--bg-color);
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  background-opacity: 0.1;
   border-radius: 20px;
   padding: 8px 15px;
   font-size: 0.9rem;
   cursor: pointer;
-  box-shadow: 
-    2px 2px 5px var(--neomorphic-shadow),
-    -2px -2px 5px var(--neomorphic-light);
+  color: white;
   transition: all 0.3s;
+  box-shadow: 0 4px 10px rgba(127, 90, 240, 0.2);
 }
 
 .command-suggestion:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    4px 4px 8px var(--neomorphic-shadow),
-    -4px -4px 8px var(--neomorphic-light);
+  box-shadow: 0 6px 15px rgba(127, 90, 240, 0.3);
 }
 
 /* Loading Animation */
@@ -696,7 +645,7 @@ footer {
   width: 12px;
   height: 12px;
   margin: 0 5px;
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
   border-radius: 50%;
   animation: loading-bounce 1.4s infinite ease-in-out both;
 }
