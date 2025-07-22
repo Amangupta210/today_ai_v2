@@ -1,244 +1,557 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Chatbot V2</title>
-  <style>
-    :root {
-      --primary-color: #7f5af0;
-      --secondary-color: #2cb67d;
-      --accent-color: #ff8e3c;
-      --text-color: #16161a;
-      --bg-color: #fffffe;
-      --card-bg: #ffffff;
-      --border-color: #e0e0e0;
-      --shadow-color: rgba(0, 0, 0, 0.1);
-      --user-msg-bg: #e2f0ff;
-      --ai-msg-bg: #f0f7ff;
-      --hover-color: #f1f2f6;
-      --gradient-start: #7f5af0;
-      --gradient-end: #2cb67d;
-    }
-
-    .dark-theme {
-      --primary-color: #7f5af0;
-      --secondary-color: #2cb67d;
-      --accent-color: #ff8e3c;
-      --text-color: #fffffe;
-      --bg-color: #16161a;
-      --card-bg: #242629;
-      --border-color: #383a3f;
-      --shadow-color: rgba(0, 0, 0, 0.3);
-      --user-msg-bg: #463d97;
-      --ai-msg-bg: #2a2b31;
-      --hover-color: #383a3f;
-      --gradient-start: #7f5af0;
-      --gradient-end: #2cb67d;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-    }
-
-    body {
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 60px);
-    }
-
-    /* Header */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      box-shadow: 0 8px 20px rgba(127, 90, 240, 0.2);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .logo h1 {
-      font-size: 2.2rem;
-      color: white;
-      font-weight: 700;
-    }
-
-    .header-controls button {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      font-size: 1.2rem;
-      color: white;
-      cursor: pointer;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      transition: all 0.3s ease;
-    }
-
-    /* Chat Container */
-    .chat-container {
-      flex: 1;
-      overflow: hidden;
-      border-radius: 16px;
-      background: var(--card-bg);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-      margin-bottom: 30px;
-      padding: 5px;
-      border: 1px solid var(--border-color);
-    }
-
-    #chat-box {
-      height: 100%;
-      overflow-y: auto;
-      padding: 20px;
-      scroll-behavior: smooth;
-    }
-
-    .message {
-      display: flex;
-      flex-direction: column;
-      max-width: 80%;
-      margin-bottom: 20px;
-      border-radius: 18px;
-      padding: 15px 20px;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .user-message {
-      align-self: flex-end;
-      background-color: var(--user-msg-bg);
-      border-bottom-right-radius: 4px;
-    }
-
-    .ai-message {
-      align-self: flex-start;
-      background-color: var(--ai-msg-bg);
-      border-bottom-left-radius: 4px;
-    }
-
-    /* Input Area */
-    .input-container {
-      display: flex;
-      gap: 15px;
-    }
-
-    #user-input {
-      flex: 1;
-      padding: 18px 25px;
-      border: 1px solid var(--border-color);
-      border-radius: 25px;
-      font-size: 1rem;
-      background-color: var(--card-bg);
-      color: var(--text-color);
-      transition: all 0.3s;
-    }
-
-    #send-btn {
-      width: 55px;
-      height: 55px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-      color: white;
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      color: #888;
-      font-size: 0.9rem;
-      border-top: 1px solid var(--border-color);
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .container { padding: 10px; }
-      .logo h1 { font-size: 1.6rem; }
-      #send-btn { width: 50px; height: 50px; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SNEAI - Your Intelligent Assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <meta name="description" content="SNEAI - Your intelligent assistant with real-time web search capabilities">
+  <meta property="og:title" content="SNEAI Assistant">
+  <meta property="og:description" content="An intelligent assistant with real-time search capabilities">
 </head>
 <body>
   <div class="container">
     <div class="header">
       <div class="logo">
-        <h1>AI Chatbot V2</h1>
+        <i class="fas fa-robot"></i>
+        <h1>SNEAI</h1>
+        <span class="tagline">Your Intelligent Assistant</span>
       </div>
       <div class="header-controls">
-        <button onclick="toggleTheme()">🌙</button>
+        <button class="control-btn" onclick="clearChat()" title="Clear Chat">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="control-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+          <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
       </div>
     </div>
-
+    
     <div class="chat-container">
-      <div id="chat-box"></div>
+      <div id="chat-box">
+        <!-- Messages will appear here -->
+      </div>
     </div>
-
+    
     <div class="input-container">
-      <input type="text" id="user-input" placeholder="Type your message..." />
-      <button id="send-btn">➤</button>
+      <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
+      <button id="send-btn" onclick="sendMessage()" title="Send Message (Enter)">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+    
+    <div class="features-container">
+      <div class="feature-card" onclick="quickPrompt('Tell me a joke')">
+        <i class="fas fa-laugh"></i>
+        <span>Joke</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Tell me an interesting fact')">
+        <i class="fas fa-lightbulb"></i>
+        <span>Fact</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('What\'s the weather in New York?')">
+        <i class="fas fa-cloud-sun"></i>
+        <span>Weather</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Search the web for artificial intelligence')">
+        <i class="fas fa-search"></i>
+        <span>Web Search</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Search Wikipedia for quantum physics')">
+        <i class="fas fa-book"></i>
+        <span>Wikipedia</span>
+      </div>
+      <div class="feature-card" onclick="showTeachModal()">
+        <i class="fas fa-brain"></i>
+        <span>Teach AI</span>
+      </div>
+      <div class="feature-card" id="voice-card" onclick="startVoiceRecognition()">
+        <i class="fas fa-microphone"></i>
+        <span>Speak</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Teach AI Modal -->
+  <div id="teach-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeTeachModal()">&times;</span>
+      <h2>Teach SNEAI</h2>
+      <p>Add custom responses to make your AI assistant smarter!</p>
+      <div class="form-group">
+        <label for="pattern">When I say (pattern):</label>
+        <input type="text" id="pattern" placeholder="e.g., What's your favorite color?">
+      </div>
+      <div class="form-group">
+        <label for="response">You should respond with:</label>
+        <textarea id="response" placeholder="e.g., My favorite color is blue!"></textarea>
+      </div>
+      <button onclick="teachAI()">Teach SNEAI</button>
     </div>
   </div>
 
-  <footer>
-    &copy; 2025 AI Chatbot V2. All rights reserved.
-  </footer>
+  <footer>Created by Aman Gupta (2025)</footer>
 
   <script>
-    const chatBox = document.getElementById('chat-box');
-    const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
-
-    function appendMessage(content, sender) {
-      const msg = document.createElement('div');
-      msg.classList.add('message', sender === 'user' ? 'user-message' : 'ai-message');
-      msg.innerHTML = `<div class="message-content">${content}</div>`;
-      chatBox.appendChild(msg);
+    // Initialize chat history array
+    let chatHistory = [];
+    
+    // Web Speech API setup
+    let recognition;
+    let synth;
+    let isSpeechEnabled = false;
+    
+    // Check if browser supports Web Speech API
+    function initSpeechRecognition() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById("user-input").value = transcript;
+          sendMessage();
+        };
+        
+        recognition.onerror = function(event) {
+          console.error('Speech recognition error', event.error);
+          addMessage("Speech recognition error: " + event.error, 'system');
+          document.getElementById('voice-card').classList.remove('listening');
+        };
+        
+        recognition.onend = function() {
+          document.getElementById('voice-card').classList.remove('listening');
+        };
+        
+        isSpeechEnabled = true;
+      } else {
+        console.warn('Speech recognition not supported');
+        document.getElementById('voice-card').style.opacity = '0.5';
+        document.getElementById('voice-card').title = 'Speech recognition not supported in this browser';
+      }
+      
+      // Initialize speech synthesis
+      if ('speechSynthesis' in window) {
+        synth = window.speechSynthesis;
+      }
+    }
+    
+    function startVoiceRecognition() {
+      if (!isSpeechEnabled) {
+        addMessage("Speech recognition is not supported in your browser.", 'system');
+        return;
+      }
+      
+      try {
+        recognition.start();
+        document.getElementById('voice-card').classList.add('listening');
+        addMessage("Listening...", 'system');
+      } catch (e) {
+        console.error('Speech recognition error', e);
+        addMessage("Could not start speech recognition. Try again.", 'system');
+      }
+    }
+    
+    function speakResponse(text) {
+      if (!synth) return;
+      
+      // Stop any ongoing speech
+      synth.cancel();
+      
+      // Create a new utterance
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+      
+      // Get available voices
+      const voices = synth.getVoices();
+      
+      // Try to find a female voice
+      const femaleVoice = voices.find(voice => voice.name.includes('female') || voice.name.includes('Female'));
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+      
+      synth.speak(utterance);
+    }
+    
+    // Add event listener for Enter key
+    document.getElementById("user-input").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    });
+    
+    // Get current time in HH:MM format
+    function getCurrentTime() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      
+      return hours + ':' + minutesStr + ' ' + ampm;
+    }
+    
+    async function sendMessage() {
+      const input = document.getElementById("user-input").value.trim();
+      if (!input) return;
+      
+      // Add user message to chat
+      addMessage(input, 'user');
+      
+      // Save to chat history
+      chatHistory.push({role: 'user', content: input});
+      
+      // Clear input field
+      document.getElementById("user-input").value = "";
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: input })
+        });
+        
+        const data = await res.json();
+        
+        // Remove typing indicator and add AI response
+        removeTypingIndicator();
+        addMessage(data.reply, 'ai');
+        
+        // Save to chat history
+        chatHistory.push({role: 'ai', content: data.reply});
+        
+        // Save chat history to local storage
+        saveChatHistory();
+        
+        // Speak the response if speech synthesis is available
+        if (synth && window.speechSynthesis) {
+          // Extract just the main content without the signature
+          const mainContent = data.reply.split('\n\n—')[0];
+          speakResponse(mainContent);
+        }
+        
+        // Add command suggestions based on the response
+        if (data.reply.includes("I searched for") || data.reply.includes("According to")) {
+          addCommandSuggestions();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        removeTypingIndicator();
+        addMessage("Sorry, I encountered an error. Please try again.", 'ai');
+      }
+    }
+    
+    function addMessage(text, sender) {
+      const chatBox = document.getElementById("chat-box");
+      const messageDiv = document.createElement("div");
+      messageDiv.className = message ${sender}-message;
+      
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "message-content";
+      
+      // Process text for markdown-like formatting
+      text = processTextFormatting(text);
+      
+      const messagePara = document.createElement("p");
+      messagePara.innerHTML = text; // Use innerHTML to render HTML formatting
+      contentDiv.appendChild(messagePara);
+      
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "message-time";
+      timeDiv.textContent = getCurrentTime();
+      
+      messageDiv.appendChild(contentDiv);
+      messageDiv.appendChild(timeDiv);
+      
+      chatBox.appendChild(messageDiv);
+      
+      // Scroll to bottom
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
-    function sendMessage() {
-      const text = userInput.value.trim();
-      if (!text) return;
-      appendMessage(text, 'user');
-      userInput.value = '';
-      setTimeout(() => appendMessage("AI Response: " + text, 'ai'), 500);
+    
+    function processTextFormatting(text) {
+      // Convert URLs to clickable links
+      text = text.replace(
+        /(https?:\/\/[^\s]+)/g, 
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+      
+      // Convert **bold** text
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // Convert *italic* text
+      text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      
+      // Format source citations
+      text = text.replace(/Source: (https?:\/\/[^\s]+)/g, 
+        '<div class="source-citation">Source: <a href="$1" target="_blank" rel="noopener noreferrer">$1</a></div>'
+      );
+      
+      // Format search results
+      text = text.replace(/(\d+)\. (.*?)(?=\n|$)/g, 
+        '<div class="search-result"><div class="search-result-title">$1. $2</div></div>'
+      );
+      
+      // Convert newlines to <br>
+      text = text.replace(/\n/g, '<br>');
+      
+      return text;
     }
-
-    sendBtn.addEventListener('click', sendMessage);
-    userInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter') sendMessage();
-    });
-
+    
+    function showTypingIndicator() {
+      const chatBox = document.getElementById("chat-box");
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "message ai-message typing-indicator";
+      typingDiv.id = "typing-indicator";
+      
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "message-content";
+      
+      const dots = document.createElement("div");
+      dots.className = "typing-dots";
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("span");
+        dots.appendChild(dot);
+      }
+      
+      // Add a random thinking message for web searches
+      const thinkingMessages = [
+        "Searching the web for you...",
+        "Looking that up in real-time...",
+        "Gathering information from multiple sources...",
+        "Processing your request...",
+        "Analyzing data from the web..."
+      ];
+      
+      const messageText = document.createElement("p");
+      messageText.textContent = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+      messageText.style.marginTop = "10px";
+      messageText.style.fontSize = "0.9em";
+      messageText.style.opacity = "0.7";
+      
+      contentDiv.appendChild(dots);
+      contentDiv.appendChild(messageText);
+      typingDiv.appendChild(contentDiv);
+      chatBox.appendChild(typingDiv);
+      
+      // Scroll to bottom
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    
+    function removeTypingIndicator() {
+      const typingIndicator = document.getElementById("typing-indicator");
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+    
+    function quickPrompt(text) {
+      document.getElementById("user-input").value = text;
+      sendMessage();
+    }
+    
+    function showTeachModal() {
+      document.getElementById("teach-modal").style.display = "flex";
+    }
+    
+    function closeTeachModal() {
+      document.getElementById("teach-modal").style.display = "none";
+    }
+    
+    function addCommandSuggestions() {
+      const chatBox = document.getElementById("chat-box");
+      const lastMessage = chatBox.lastElementChild;
+      
+      if (lastMessage && lastMessage.classList.contains('ai-message')) {
+        const suggestionsDiv = document.createElement("div");
+        suggestionsDiv.className = "command-suggestions";
+        
+        const suggestions = [
+          "Tell me more about this",
+          "Explain in simpler terms",
+          "Search Wikipedia instead",
+          "Find more recent information"
+        ];
+        
+        suggestions.forEach(suggestion => {
+          const suggestionSpan = document.createElement("span");
+          suggestionSpan.className = "command-suggestion";
+          suggestionSpan.textContent = suggestion;
+          suggestionSpan.onclick = function() {
+            quickPrompt(suggestion);
+          };
+          suggestionsDiv.appendChild(suggestionSpan);
+        });
+        
+        lastMessage.querySelector('.message-content').appendChild(suggestionsDiv);
+      }
+    }
+    
+    async function teachAI() {
+      const pattern = document.getElementById("pattern").value.trim();
+      const response = document.getElementById("response").value.trim();
+      
+      if (!pattern || !response) {
+        alert("Both pattern and response are required!");
+        return;
+      }
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      try {
+        const res = await fetch('/teach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pattern, response })
+        });
+        
+        const data = await res.json();
+        
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        if (data.status === "success") {
+          closeTeachModal();
+          document.getElementById("pattern").value = "";
+          document.getElementById("response").value = "";
+          
+          // Add confirmation message to chat
+          addMessage(data.message, 'ai');
+          
+          // Save to chat history
+          chatHistory.push({role: 'ai', content: data.message});
+          saveChatHistory();
+        } else {
+          addMessage("Error: " + data.message, 'ai');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        removeTypingIndicator();
+        addMessage("Failed to teach SNEAI. Please try again.", 'ai');
+      }
+    }
+    
+    // Save chat history to local storage
+    function saveChatHistory() {
+      if (chatHistory.length > 100) {
+        // Limit history to last 100 messages
+        chatHistory = chatHistory.slice(-100);
+      }
+      localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory));
+    }
+    
+    // Load chat history from local storage
+    function loadChatHistory() {
+      const savedHistory = localStorage.getItem('sneai_chat_history');
+      if (savedHistory) {
+        try {
+          chatHistory = JSON.parse(savedHistory);
+          
+          // Display up to last 10 messages for cleaner interface
+          const recentMessages = chatHistory.slice(-10);
+          for (const msg of recentMessages) {
+            addMessage(msg.content, msg.role);
+          }
+        } catch (e) {
+          console.error('Error loading chat history:', e);
+          chatHistory = [];
+        }
+      }
+    }
+    
+    // Clear chat
+    function clearChat() {
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = '';
+      chatHistory = [];
+      localStorage.removeItem('sneai_chat_history');
+      
+      // Add welcome message
+      const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities. Ask me anything, and I'll do my best to help you!";
+      addMessage(welcomeMessage, 'ai');
+      chatHistory.push({role: 'ai', content: welcomeMessage});
+    }
+    
+    // Theme toggle functionality
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
+      const themeIcon = document.getElementById('theme-icon');
+      
+      if (document.body.classList.contains('dark-theme')) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+      // Ctrl+Enter or Cmd+Enter to send message
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        sendMessage();
+      }
+      
+      // Escape to close modal
+      if (event.key === 'Escape') {
+        closeTeachModal();
+      }
+    });
+    
+    // Load saved theme preference and chat history on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-icon').classList.remove('fa-moon');
+        document.getElementById('theme-icon').classList.add('fa-sun');
+      }
+      
+      // Clear chat box first
+      document.getElementById("chat-box").innerHTML = '';
+      
+      // Load chat history
+      loadChatHistory();
+      
+      // If no history, show welcome message
+      if (chatHistory.length === 0) {
+        const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities. Ask me anything, and I'll do my best to help you!";
+        addMessage(welcomeMessage, 'ai');
+        chatHistory.push({role: 'ai', content: welcomeMessage});
+      }
+      
+      // Initialize speech recognition
+      initSpeechRecognition();
+    });
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById("teach-modal");
+      if (event.target == modal) {
+        closeTeachModal();
+      }
     }
   </script>
 </body>
-</html>
+</html>        
