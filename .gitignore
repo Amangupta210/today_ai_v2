@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local development
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Desktop app specific
+sneai_desktop.py
+run_desktop.bat
+
+# Deployment files not needed for Render
+deploy.py
+DEPLOYMENT.md
+app.json
+runtime.txt
+
+# Logs
+*.log
+
+# Custom responses (may want to include this for shared responses)
+# custom_responses.json

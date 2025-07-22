@@ -1,0 +1,3 @@
+@echo off
+echo Starting SNEAI Web Interface...
+python app.py
