@@ -4,182 +4,706 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SNEAI - Your Intelligent Assistant</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { display: flex; flex-direction: column; min-height: 100vh; background: #f8f9fa; color: #212529; transition: background 0.3s, color 0.3s; }
-    body.dark-theme { background: #121212; color: #f1f1f1; }
+    /* ===========================
+       GLOBAL RESET & VARIABLES
+       =========================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    /* HEADER */
-    .header { display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border-bottom: 1px solid #ccc; position: sticky; top: 0; background: inherit; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .logo { display: flex; align-items: center; gap: 8px; }
-    .logo h1 { font-size: 1.5rem; }
-    .tagline { font-size: 0.85rem; color: #666; }
+    :root {
+      --primary-color: #4a90e2;
+      --secondary-color: #f5f5f5;
+      --accent-color: #ff5a5f;
+      --text-color: #333;
+      --text-light: #777;
+      --background: #ffffff;
+      --header-bg: #f0f2f5;
+      --chat-bg: #ffffff;
+      --user-msg-bg: #4a90e2;
+      --ai-msg-bg: #eaeaea;
+      --border-radius: 14px;
+      --transition: 0.3s ease;
+      --shadow: rgba(0,0,0,0.1) 0px 4px 12px;
+    }
 
-    /* CHAT */
-    .chat-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-    .message { display: flex; align-items: flex-end; gap: 8px; animation: fadeInUp 0.3s ease; }
-    @keyframes fadeInUp { from {opacity:0;transform:translateY(5px);} to {opacity:1;transform:translateY(0);} }
-    .message-content { padding: 10px 14px; border-radius: 14px; line-height: 1.4; font-size: 0.95rem; max-width: 80%; word-wrap: break-word; }
-    .user-message .message-content { background: #4a90e2; color: #fff; border-bottom-right-radius: 0; margin-left: auto; }
-    .ai-message .message-content { background: #e9ecef; border-bottom-left-radius: 0; display: flex; align-items: center; }
-    body.dark-theme .ai-message .message-content { background: #333; color: #f1f1f1; }
-    .ai-avatar { width: 32px; height: 32px; border-radius: 50%; background: #4a90e2; color: white; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-    .message-time { font-size: 0.7rem; opacity: 0.6; margin-top: 4px; text-align: right; }
+    body.dark-theme {
+      --background: #1e1e1e;
+      --header-bg: #2a2a2a;
+      --chat-bg: #121212;
+      --text-color: #f1f1f1;
+      --text-light: #aaa;
+      --user-msg-bg: #0078ff;
+      --ai-msg-bg: #2f2f2f;
+    }
 
-    /* INPUT */
-    .input-container { display: flex; gap: 8px; border-top: 1px solid #ccc; padding: 8px; background: inherit; position: sticky; bottom: 0; }
-    #user-input { flex: 1; padding: 10px 12px; border: 1px solid #aaa; border-radius: 12px; font-size: 1rem; outline: none; }
-    #send-btn { background: #4a90e2; color: white; border: none; border-radius: 10px; padding: 0 18px; cursor: pointer; font-size: 1.2rem; transition: background 0.3s; }
-    #send-btn:hover { background: #3b78c4; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      transition: background var(--transition), color var(--transition);
+    }
 
-    /* FAB MENU */
-    .fab-container { position: fixed; bottom: 80px; right: 20px; z-index: 100; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-    .fab-btn { background: #4a90e2; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center; font-size: 1.3rem; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.2); transition: transform 0.2s; }
-    .fab-btn:hover { transform: scale(1.1); background: #3b78c4; }
-    .fab-options { display: none; flex-direction: column; gap: 6px; }
-    .fab-options.show { display: flex; }
+    .container {
+      width: 100%;
+      max-width: 450px;
+      height: 100%;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--chat-bg);
+      border-radius: 0;
+      box-shadow: var(--shadow);
+    }
 
-    /* MODAL */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10; }
-    .modal-content { background: #fff; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; }
-    body.dark-theme .modal-content { background: #333; color: #f1f1f1; }
-    .modal .close { float: right; font-size: 1.4rem; cursor: pointer; }
+    /* ===========================
+       HEADER
+       =========================== */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--header-bg);
+      padding: 12px 16px;
+      border-bottom: 1px solid #ddd;
+      transition: background var(--transition);
+    }
 
-    footer { text-align: center; font-size: 0.85rem; padding: 8px; color: #666; }
-    body.dark-theme footer { color: #aaa; }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-    @media (max-width: 500px) {
-      .message-content { max-width: 90%; font-size: 0.9rem; }
-      #user-input { font-size: 0.9rem; }
+    .logo i {
+      font-size: 1.4rem;
+      color: var(--primary-color);
+    }
+
+    .logo h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .tagline {
+      font-size: 0.7rem;
+      color: var(--text-light);
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .control-btn {
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--text-color);
+      font-size: 1rem;
+      padding: 6px;
+      border-radius: var(--border-radius);
+      transition: background var(--transition);
+    }
+
+    .control-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* ===========================
+       CHAT CONTAINER
+       =========================== */
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--chat-bg);
+      scroll-behavior: smooth;
+    }
+
+    #chat-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 10px 14px;
+      border-radius: var(--border-radius);
+      line-height: 1.4;
+      word-wrap: break-word;
+      font-size: 0.95rem;
+      position: relative;
+      box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .message:hover {
+      transform: translateY(-1px);
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: var(--user-msg-bg);
+      color: #fff;
+    }
+
+    .ai-message {
+      align-self: flex-start;
+      background: var(--ai-msg-bg);
+      color: var(--text-color);
+    }
+
+    .message-time {
+      font-size: 0.7rem;
+      color: var(--text-light);
+      margin-top: 2px;
+      text-align: right;
+    }
+
+    /* ===========================
+       INPUT CONTAINER
+       =========================== */
+    .input-container {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--header-bg);
+      border-top: 1px solid #ddd;
+      gap: 8px;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 10px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+      background: var(--background);
+      color: var(--text-color);
+    }
+
+    #send-btn {
+      background: var(--primary-color);
+      border: none;
+      padding: 10px 14px;
+      color: #fff;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    #send-btn:hover {
+      background: #357abd;
+    }
+
+    /* ===========================
+       FEATURE BUTTONS
+       =========================== */
+    .features-container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10px;
+      gap: 10px;
+      justify-content: center;
+      background: var(--header-bg);
+      border-top: 1px solid #ddd;
+    }
+
+    .feature-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 70px;
+      background: var(--secondary-color);
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: transform var(--transition);
+      text-align: center;
+    }
+
+    .feature-card i {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+      color: var(--primary-color);
+    }
+
+    .feature-card span {
+      font-size: 0.7rem;
+    }
+
+    .feature-card:hover {
+      transform: scale(1.05);
+    }
+
+    /* ===========================
+       TEACH AI MODAL
+       =========================== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: var(--background);
+      padding: 20px;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 400px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content h2 {
+      margin-bottom: 10px;
+    }
+
+    .modal-content .form-group {
+      margin: 10px 0;
+      text-align: left;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ccc;
+      outline: none;
+      background: var(--background);
+      color: var(--text-color);
+    }
+
+    .modal-content button {
+      margin-top: 12px;
+      padding: 10px;
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+
+    .modal-content button:hover {
+      background: #357abd;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.4rem;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+
+    /* ===========================
+       RESPONSIVE
+       =========================== */
+    @media (max-width: 600px) {
+      .container {
+        max-width: 100%;
+        height: 100%;
+        border-radius: 0;
+      }
+
+      .feature-card {
+        width: 60px;
+        height: 60px;
+      }
+
+      .feature-card i {
+        font-size: 1.1rem;
+      }
+
+      #user-input {
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="logo">
-      <i class="fas fa-robot"></i>
-      <h1>SNEAI</h1>
-      <span class="tagline">Your Intelligent Assistant</span>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-robot"></i>
+        <div>
+          <h1>SNEAI</h1>
+          <span class="tagline">Your Intelligent Assistant</span>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="control-btn" onclick="clearChat()" title="Clear Chat">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+        <button class="control-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Theme">
+          <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-container">
+      <div id="chat-box">
+        <!-- Chat messages will appear here -->
+      </div>
+    </div>
+
+    <!-- INPUT -->
+    <div class="input-container">
+      <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
+      <button id="send-btn" onclick="sendMessage()" title="Send Message">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features-container">
+      <div class="feature-card" onclick="quickPrompt('Tell me a joke')">
+        <i class="fas fa-laugh"></i>
+        <span>Joke</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Tell me a fact')">
+        <i class="fas fa-lightbulb"></i>
+        <span>Fact</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Weather update')">
+        <i class="fas fa-cloud-sun"></i>
+        <span>Weather</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Search web for AI')">
+        <i class="fas fa-search"></i>
+        <span>Web</span>
+      </div>
+      <div class="feature-card" onclick="showTeachModal()">
+        <i class="fas fa-brain"></i>
+        <span>Teach AI</span>
+      </div>
+      <div class="feature-card" onclick="startVoiceRecognition()">
+        <i class="fas fa-microphone"></i>
+        <span>Speak</span>
+      </div>
     </div>
   </div>
 
-  <div class="chat-container" id="chat-box"></div>
-
-  <div class="input-container">
-    <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
-    <button id="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
-  </div>
-
-  <!-- Floating Action Button -->
-  <div class="fab-container">
-    <div class="fab-options" id="fab-options">
-      <button class="fab-btn" onclick="startVoiceRecognition()" title="Speak"><i class="fas fa-microphone"></i></button>
-      <button class="fab-btn" onclick="toggleTheme()" title="Theme"><i class="fas fa-moon"></i></button>
-      <button class="fab-btn" onclick="showTeachModal()" title="Teach AI"><i class="fas fa-brain"></i></button>
-      <button class="fab-btn" onclick="clearChat()" title="Clear Chat"><i class="fas fa-trash"></i></button>
-    </div>
-    <button class="fab-btn" onclick="toggleFab()"><i class="fas fa-plus"></i></button>
-  </div>
-
-  <!-- Teach Modal -->
+  <!-- TEACH MODAL -->
   <div id="teach-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeTeachModal()">&times;</span>
       <h2>Teach SNEAI</h2>
-      <input id="pattern" placeholder="When I say..." style="width:100%;margin-bottom:8px;">
-      <textarea id="response" placeholder="SNEAI replies with..." style="width:100%;height:80px;"></textarea>
-      <button onclick="teachAI()" style="margin-top:10px; padding:8px 12px; background:#4a90e2; color:white; border:none; border-radius:5px; cursor:pointer;">Teach</button>
+      <p>Add custom responses!</p>
+      <div class="form-group">
+        <label for="pattern">When I say:</label>
+        <input type="text" id="pattern" placeholder="e.g., What's your hobby?">
+      </div>
+      <div class="form-group">
+        <label for="response">Respond with:</label>
+        <textarea id="response" placeholder="e.g., I love helping you!"></textarea>
+      </div>
+      <button onclick="teachAI()">Teach</button>
     </div>
   </div>
-
-  <footer>Created by Aman Gupta (2025)</footer>
-
   <script>
-    let chatHistory = [];
-    let recognition, synth, isSpeechEnabled = false;
-    let learnedResponses = JSON.parse(localStorage.getItem('sneai_custom_responses') || '{}');
+    /* ===========================
+       GLOBAL VARIABLES
+       =========================== */
+    let chatHistory = []; // Stores chat messages
+    let recognition;      // Voice recognition
+    let synth;            // Voice synthesis
+    let isSpeechEnabled = false;
 
-    function toggleFab() {
-      document.getElementById('fab-options').classList.toggle('show');
-    }
-
+    /* ===========================
+       INIT SPEECH (Voice Input + Output)
+       =========================== */
     function initSpeechRecognition() {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.interimResults = false;
         recognition.lang = 'en-US';
-        recognition.onresult = e => { document.getElementById("user-input").value = e.results[0][0].transcript; sendMessage(); };
+
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById("user-input").value = transcript;
+          sendMessage();
+        };
+
+        recognition.onerror = function(event) {
+          addMessage("Speech error: " + event.error, 'system');
+          document.getElementById('voice-card').classList.remove('listening');
+        };
+
+        recognition.onend = function() {
+          document.getElementById('voice-card').classList.remove('listening');
+        };
+
         isSpeechEnabled = true;
+      } else {
+        document.getElementById('voice-card').style.opacity = '0.5';
+        document.getElementById('voice-card').title = 'Speech recognition not supported';
       }
-      if ('speechSynthesis' in window) synth = window.speechSynthesis;
+
+      if ('speechSynthesis' in window) {
+        synth = window.speechSynthesis;
+      }
     }
 
     function startVoiceRecognition() {
-      if (!isSpeechEnabled) return addMessage("Voice recognition not supported.", 'ai');
-      recognition.start(); addMessage("Listening...", 'ai');
+      if (!isSpeechEnabled) {
+        addMessage("Speech recognition not supported.", 'system');
+        return;
+      }
+      try {
+        recognition.start();
+        document.getElementById('voice-card').classList.add('listening');
+        addMessage("Listening...", 'system');
+      } catch (e) {
+        addMessage("Could not start speech recognition.", 'system');
+      }
     }
 
-    function speakResponse(text) { if (!synth) return; synth.cancel(); synth.speak(new SpeechSynthesisUtterance(text)); }
+    function speakResponse(text) {
+      if (!synth) return;
+      synth.cancel(); // Stop existing speech
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.pitch = 1.1;
+      utterance.volume = 1.0;
 
-    function sendMessage() {
+      const voices = synth.getVoices();
+      const femaleVoice = voices.find(v => /female/i.test(v.name)) || voices.find(v => /Google UK English Female/i.test(v.name));
+      if (femaleVoice) utterance.voice = femaleVoice;
+      synth.speak(utterance);
+    }
+
+    /* ===========================
+       MESSAGE HANDLING
+       =========================== */
+    document.getElementById("user-input").addEventListener("keyup", function(event) {
+      if (event.key === "Enter") sendMessage();
+    });
+
+    function getCurrentTime() {
+      const now = new Date();
+      let h = now.getHours();
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${m} ${ampm}`;
+    }
+
+    async function sendMessage() {
       const input = document.getElementById("user-input").value.trim();
       if (!input) return;
+
       addMessage(input, 'user');
+      chatHistory.push({role: 'user', content: input});
       document.getElementById("user-input").value = "";
+      showTypingIndicator();
+
+      // SECRET MODES
+      if (input.toLowerCase().includes("sneha1")) {
+        handleSecretMode(input);
+        return;
+      }
+
+      // Simulate AI response
       setTimeout(() => {
-        let reply = learnedResponses[input.toLowerCase()] || `This is a sample AI response for: ${input}`;
-        addMessage(reply, 'ai');
-        speakResponse(reply);
+        removeTypingIndicator();
+        const aiReply = `SNEAI: I understood "${input}". (This is a demo reply.)`;
+        addMessage(aiReply, 'ai');
+        chatHistory.push({role: 'ai', content: aiReply});
         saveChatHistory();
-      }, 700);
+        speakResponse(aiReply);
+      }, 1200);
     }
 
     function addMessage(text, sender) {
       const chatBox = document.getElementById("chat-box");
-      const msg = document.createElement("div");
-      msg.className = `message ${sender}-message`;
-      msg.innerHTML = sender === 'ai'
-        ? `<div class="ai-avatar">🤖</div><div class="message-content"><p>${text}</p><div class="message-time">${getTime()}</div></div>`
-        : `<div class="message-content"><p>${text}</p><div class="message-time">${getTime()}</div></div>`;
-      chatBox.appendChild(msg);
+      const messageDiv = document.createElement("div");
+      messageDiv.className = `message ${sender}-message`;
+
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "message-content";
+
+      const messagePara = document.createElement("p");
+      messagePara.innerHTML = processTextFormatting(text);
+      contentDiv.appendChild(messagePara);
+
+      const timeDiv = document.createElement("div");
+      timeDiv.className = "message-time";
+      timeDiv.textContent = getCurrentTime();
+
+      messageDiv.appendChild(contentDiv);
+      messageDiv.appendChild(timeDiv);
+      chatBox.appendChild(messageDiv);
+
       chatBox.scrollTop = chatBox.scrollHeight;
-      chatHistory.push({role: sender, content: text});
     }
 
-    function getTime() {
-      const now = new Date(), h = now.getHours(), m = now.getMinutes();
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      return `${h % 12 || 12}:${m<10?'0'+m:m} ${ampm}`;
+    function processTextFormatting(text) {
+      text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      text = text.replace(/\n/g, '<br>');
+      return text;
     }
 
-    function clearChat() { document.getElementById("chat-box").innerHTML = ''; chatHistory = []; saveChatHistory(); }
-    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
-    function teachAI() {
-      const p = document.getElementById("pattern").value.trim().toLowerCase();
-      const r = document.getElementById("response").value.trim();
-      if (!p || !r) return alert("Both fields required!");
-      learnedResponses[p] = r;
-      localStorage.setItem('sneai_custom_responses', JSON.stringify(learnedResponses));
-      addMessage(`Learned: "${p}" → "${r}"`, 'ai');
+    function showTypingIndicator() {
+      const chatBox = document.getElementById("chat-box");
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "message ai-message typing-indicator";
+      typingDiv.id = "typing-indicator";
+      typingDiv.innerHTML = `<div class="message-content"><p>Typing...</p></div>`;
+      chatBox.appendChild(typingDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const typingIndicator = document.getElementById("typing-indicator");
+      if (typingIndicator) typingIndicator.remove();
+    }
+
+    /* ===========================
+       QUICK PROMPT
+       =========================== */
+    function quickPrompt(text) {
+      document.getElementById("user-input").value = text;
+      sendMessage();
+    }
+
+    /* ===========================
+       TEACH AI LOGIC
+       =========================== */
+    async function teachAI() {
+      const pattern = document.getElementById("pattern").value.trim();
+      const response = document.getElementById("response").value.trim();
+
+      if (!pattern || !response) {
+        alert("Both fields are required!");
+        return;
+      }
+      removeTypingIndicator();
+      addMessage(`New custom response added for "${pattern}"`, 'ai');
+      chatHistory.push({role: 'ai', content: response});
+      saveChatHistory();
       closeTeachModal();
     }
 
-    function showTeachModal() { document.getElementById("teach-modal").style.display = "flex"; }
-    function closeTeachModal() { document.getElementById("teach-modal").style.display = "none"; }
-
-    function saveChatHistory() { localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory.slice(-100))); }
-    function loadChatHistory() {
-      const saved = JSON.parse(localStorage.getItem('sneai_chat_history') || "[]");
-      chatHistory = saved; for (const m of chatHistory) addMessage(m.content, m.role);
+    function showTeachModal() {
+      document.getElementById("teach-modal").style.display = "flex";
+    }
+    function closeTeachModal() {
+      document.getElementById("teach-modal").style.display = "none";
     }
 
-    document.getElementById("user-input").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); sendMessage(); } });
-    document.addEventListener("DOMContentLoaded", () => {
-      loadChatHistory(); initSpeechRecognition();
-      if (chatHistory.length === 0) addMessage("Hello! I'm SNEAI, your intelligent assistant. Ask me anything!", 'ai');
+    /* ===========================
+       CHAT HISTORY STORAGE
+       =========================== */
+    function saveChatHistory() {
+      if (chatHistory.length > 150) chatHistory = chatHistory.slice(-150);
+      localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory));
+    }
+
+    function loadChatHistory() {
+      const saved = localStorage.getItem('sneai_chat_history');
+      if (!saved) return;
+      try {
+        chatHistory = JSON.parse(saved);
+        chatHistory.forEach(msg => addMessage(msg.content, msg.role));
+      } catch (e) {
+        chatHistory = [];
+      }
+    }
+
+    function clearChat() {
+      document.getElementById("chat-box").innerHTML = '';
+      chatHistory = [];
+      localStorage.removeItem('sneai_chat_history');
+      addMessage("Hello! I'm SNEAI, your intelligent assistant. Ask me anything!", 'ai');
+    }
+
+    /* ===========================
+       THEME TOGGLE
+       =========================== */
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
+      const icon = document.getElementById('theme-icon');
+      if (document.body.classList.contains('dark-theme')) {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        icon.classList.add('fa-moon');
+        icon.classList.remove('fa-sun');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    /* ===========================
+       SECRET MODES
+       =========================== */
+    function handleSecretMode(input) {
+      removeTypingIndicator();
+      let reply = "";
+      if (input.toLowerCase().includes("sneha1")) {
+        reply = "💖 Hey love! Tum meri duniya ki sabse pyaari insaan ho. 🥰";
+      } else if (input.toLowerCase().includes("sneha2")) {
+        reply = "😘 Mera dil sirf tumhare liye dhadakta hai. Tum meri smile ka reason ho.";
+      } else {
+        reply = "❤️ Secret mode active! Tum bahut special ho.";
+      }
+      addMessage(reply, 'ai');
+      chatHistory.push({role: 'ai', content: reply});
+      saveChatHistory();
+      speakResponse(reply);
+    }
+
+    /* ===========================
+       EVENT LISTENERS & INIT
+       =========================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') document.body.classList.add('dark-theme');
+      loadChatHistory();
+      if (chatHistory.length === 0) {
+        addMessage("Hello! I'm SNEAI, your intelligent assistant. Ask me anything!", 'ai');
+      }
+      initSpeechRecognition();
     });
-    window.onclick = e => { if (e.target == document.getElementById("teach-modal")) closeTeachModal(); }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("teach-modal");
+      if (event.target == modal) closeTeachModal();
+    }
   </script>
 </body>
 </html>
