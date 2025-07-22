@@ -4,361 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SNEAI - Your Intelligent Assistant</title>
-  <style>
-    /* ===========================
-       GLOBAL RESET & VARIABLES
-       =========================== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary-color: #4a90e2;
-      --secondary-color: #f5f5f5;
-      --accent-color: #ff5a5f;
-      --text-color: #333;
-      --text-light: #777;
-      --background: #ffffff;
-      --header-bg: #f0f2f5;
-      --chat-bg: #ffffff;
-      --user-msg-bg: #4a90e2;
-      --ai-msg-bg: #eaeaea;
-      --border-radius: 14px;
-      --transition: 0.3s ease;
-      --shadow: rgba(0,0,0,0.1) 0px 4px 12px;
-    }
-
-    body.dark-theme {
-      --background: #1e1e1e;
-      --header-bg: #2a2a2a;
-      --chat-bg: #121212;
-      --text-color: #f1f1f1;
-      --text-light: #aaa;
-      --user-msg-bg: #0078ff;
-      --ai-msg-bg: #2f2f2f;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--background);
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      overflow: hidden;
-      transition: background var(--transition), color var(--transition);
-    }
-
-    .container {
-      width: 100%;
-      max-width: 450px;
-      height: 100%;
-      max-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--chat-bg);
-      border-radius: 0;
-      box-shadow: var(--shadow);
-    }
-
-    /* ===========================
-       HEADER
-       =========================== */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--header-bg);
-      padding: 12px 16px;
-      border-bottom: 1px solid #ddd;
-      transition: background var(--transition);
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo i {
-      font-size: 1.4rem;
-      color: var(--primary-color);
-    }
-
-    .logo h1 {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .tagline {
-      font-size: 0.7rem;
-      color: var(--text-light);
-    }
-
-    .header-controls {
-      display: flex;
-      gap: 8px;
-    }
-
-    .control-btn {
-      border: none;
-      background: none;
-      cursor: pointer;
-      color: var(--text-color);
-      font-size: 1rem;
-      padding: 6px;
-      border-radius: var(--border-radius);
-      transition: background var(--transition);
-    }
-
-    .control-btn:hover {
-      background: var(--secondary-color);
-    }
-
-    /* ===========================
-       CHAT CONTAINER
-       =========================== */
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      background: var(--chat-bg);
-      scroll-behavior: smooth;
-    }
-
-    #chat-box {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      max-width: 80%;
-      padding: 10px 14px;
-      border-radius: var(--border-radius);
-      line-height: 1.4;
-      word-wrap: break-word;
-      font-size: 0.95rem;
-      position: relative;
-      box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .message:hover {
-      transform: translateY(-1px);
-    }
-
-    .user-message {
-      align-self: flex-end;
-      background: var(--user-msg-bg);
-      color: #fff;
-    }
-
-    .ai-message {
-      align-self: flex-start;
-      background: var(--ai-msg-bg);
-      color: var(--text-color);
-    }
-
-    .message-time {
-      font-size: 0.7rem;
-      color: var(--text-light);
-      margin-top: 2px;
-      text-align: right;
-    }
-
-    /* ===========================
-       INPUT CONTAINER
-       =========================== */
-    .input-container {
-      display: flex;
-      align-items: center;
-      padding: 10px 12px;
-      background: var(--header-bg);
-      border-top: 1px solid #ddd;
-      gap: 8px;
-    }
-
-    #user-input {
-      flex: 1;
-      padding: 10px;
-      border-radius: var(--border-radius);
-      border: 1px solid #ccc;
-      font-size: 1rem;
-      outline: none;
-      background: var(--background);
-      color: var(--text-color);
-    }
-
-    #send-btn {
-      background: var(--primary-color);
-      border: none;
-      padding: 10px 14px;
-      color: #fff;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: background var(--transition);
-    }
-
-    #send-btn:hover {
-      background: #357abd;
-    }
-
-    /* ===========================
-       FEATURE BUTTONS
-       =========================== */
-    .features-container {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 10px;
-      gap: 10px;
-      justify-content: center;
-      background: var(--header-bg);
-      border-top: 1px solid #ddd;
-    }
-
-    .feature-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 70px;
-      height: 70px;
-      background: var(--secondary-color);
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: transform var(--transition);
-      text-align: center;
-    }
-
-    .feature-card i {
-      font-size: 1.3rem;
-      margin-bottom: 4px;
-      color: var(--primary-color);
-    }
-
-    .feature-card span {
-      font-size: 0.7rem;
-    }
-
-    .feature-card:hover {
-      transform: scale(1.05);
-    }
-
-    /* ===========================
-       TEACH AI MODAL
-       =========================== */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: var(--background);
-      padding: 20px;
-      border-radius: var(--border-radius);
-      width: 90%;
-      max-width: 400px;
-      box-shadow: var(--shadow);
-      text-align: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .modal-content h2 {
-      margin-bottom: 10px;
-    }
-
-    .modal-content .form-group {
-      margin: 10px 0;
-      text-align: left;
-    }
-
-    .modal-content input,
-    .modal-content textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: var(--border-radius);
-      border: 1px solid #ccc;
-      outline: none;
-      background: var(--background);
-      color: var(--text-color);
-    }
-
-    .modal-content button {
-      margin-top: 12px;
-      padding: 10px;
-      background: var(--primary-color);
-      color: #fff;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: background var(--transition);
-    }
-
-    .modal-content button:hover {
-      background: #357abd;
-    }
-
-    .close {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 1.4rem;
-      color: var(--text-light);
-      cursor: pointer;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: scale(0.9);}
-      to {opacity: 1; transform: scale(1);}
-    }
-
-    /* ===========================
-       RESPONSIVE
-       =========================== */
-    @media (max-width: 600px) {
-      .container {
-        max-width: 100%;
-        height: 100%;
-        border-radius: 0;
-      }
-
-      .feature-card {
-        width: 60px;
-        height: 60px;
-      }
-
-      .feature-card i {
-        font-size: 1.1rem;
-      }
-
-      #user-input {
-        font-size: 0.9rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+  <meta name="description" content="SNEAI - Your intelligent assistant with real-time web search capabilities">
+  <meta property="og:title" content="SNEAI Assistant">
+  <meta property="og:description" content="An intelligent assistant with real-time search capabilities">
 </head>
 <body>
   <div class="container">
-    <!-- HEADER -->
     <div class="header">
       <div class="logo">
         <i class="fas fa-robot"></i>
-        <div>
-          <h1>SNEAI</h1>
-          <span class="tagline">Your Intelligent Assistant</span>
-        </div>
+        <h1>SNEAI</h1>
+        <span class="tagline">Your Intelligent Assistant</span>
       </div>
       <div class="header-controls">
         <button class="control-btn" onclick="clearChat()" title="Clear Chat">
@@ -369,341 +31,527 @@
         </button>
       </div>
     </div>
-
-    <!-- CHAT -->
+    
     <div class="chat-container">
       <div id="chat-box">
-        <!-- Chat messages will appear here -->
+        <!-- Messages will appear here -->
       </div>
     </div>
-
-    <!-- INPUT -->
+    
     <div class="input-container">
       <input id="user-input" placeholder="Ask me anything..." autocomplete="off" />
-      <button id="send-btn" onclick="sendMessage()" title="Send Message">
+      <button id="send-btn" onclick="sendMessage()" title="Send Message (Enter)">
         <i class="fas fa-paper-plane"></i>
       </button>
     </div>
-
-    <!-- FEATURES -->
+    
     <div class="features-container">
       <div class="feature-card" onclick="quickPrompt('Tell me a joke')">
         <i class="fas fa-laugh"></i>
         <span>Joke</span>
       </div>
-      <div class="feature-card" onclick="quickPrompt('Tell me a fact')">
+      <div class="feature-card" onclick="quickPrompt('Tell me an interesting fact')">
         <i class="fas fa-lightbulb"></i>
         <span>Fact</span>
       </div>
-      <div class="feature-card" onclick="quickPrompt('Weather update')">
+      <div class="feature-card" onclick="quickPrompt('What\'s the weather in New York?')">
         <i class="fas fa-cloud-sun"></i>
         <span>Weather</span>
       </div>
-      <div class="feature-card" onclick="quickPrompt('Search web for AI')">
+      <div class="feature-card" onclick="quickPrompt('Search the web for artificial intelligence')">
         <i class="fas fa-search"></i>
-        <span>Web</span>
+        <span>Web Search</span>
+      </div>
+      <div class="feature-card" onclick="quickPrompt('Search Wikipedia for quantum physics')">
+        <i class="fas fa-book"></i>
+        <span>Wikipedia</span>
       </div>
       <div class="feature-card" onclick="showTeachModal()">
         <i class="fas fa-brain"></i>
         <span>Teach AI</span>
       </div>
-      <div class="feature-card" onclick="startVoiceRecognition()">
+      <div class="feature-card" id="voice-card" onclick="startVoiceRecognition()">
         <i class="fas fa-microphone"></i>
         <span>Speak</span>
       </div>
     </div>
   </div>
-
-  <!-- TEACH MODAL -->
+  
+  <!-- Teach AI Modal -->
   <div id="teach-modal" class="modal">
     <div class="modal-content">
       <span class="close" onclick="closeTeachModal()">&times;</span>
       <h2>Teach SNEAI</h2>
-      <p>Add custom responses!</p>
+      <p>Add custom responses to make your AI assistant smarter!</p>
       <div class="form-group">
-        <label for="pattern">When I say:</label>
-        <input type="text" id="pattern" placeholder="e.g., What's your hobby?">
+        <label for="pattern">When I say (pattern):</label>
+        <input type="text" id="pattern" placeholder="e.g., What's your favorite color?">
       </div>
       <div class="form-group">
-        <label for="response">Respond with:</label>
-        <textarea id="response" placeholder="e.g., I love helping you!"></textarea>
+        <label for="response">You should respond with:</label>
+        <textarea id="response" placeholder="e.g., My favorite color is blue!"></textarea>
       </div>
-      <button onclick="teachAI()">Teach</button>
+      <button onclick="teachAI()">Teach SNEAI</button>
     </div>
   </div>
-  <script>
-    /* ===========================
-       GLOBAL VARIABLES
-       =========================== */
-    let chatHistory = []; // Stores chat messages
-    let recognition;      // Voice recognition
-    let synth;            // Voice synthesis
-    let isSpeechEnabled = false;
 
-    /* ===========================
-       INIT SPEECH (Voice Input + Output)
-       =========================== */
+  <footer>Created by Aman Gupta (2025)</footer>
+
+  <script>
+    // Initialize chat history array
+    let chatHistory = [];
+    
+    // Web Speech API setup
+    let recognition;
+    let synth;
+    let isSpeechEnabled = false;
+    
+    // Check if browser supports Web Speech API
     function initSpeechRecognition() {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.lang = 'en-US';
-
+        
         recognition.onresult = function(event) {
           const transcript = event.results[0][0].transcript;
           document.getElementById("user-input").value = transcript;
           sendMessage();
         };
-
+        
         recognition.onerror = function(event) {
-          addMessage("Speech error: " + event.error, 'system');
+          console.error('Speech recognition error', event.error);
+          addMessage("Speech recognition error: " + event.error, 'system');
           document.getElementById('voice-card').classList.remove('listening');
         };
-
+        
         recognition.onend = function() {
           document.getElementById('voice-card').classList.remove('listening');
         };
-
+        
         isSpeechEnabled = true;
       } else {
+        console.warn('Speech recognition not supported');
         document.getElementById('voice-card').style.opacity = '0.5';
-        document.getElementById('voice-card').title = 'Speech recognition not supported';
+        document.getElementById('voice-card').title = 'Speech recognition not supported in this browser';
       }
-
+      
+      // Initialize speech synthesis
       if ('speechSynthesis' in window) {
         synth = window.speechSynthesis;
       }
     }
-
+    
     function startVoiceRecognition() {
       if (!isSpeechEnabled) {
-        addMessage("Speech recognition not supported.", 'system');
+        addMessage("Speech recognition is not supported in your browser.", 'system');
         return;
       }
+      
       try {
         recognition.start();
         document.getElementById('voice-card').classList.add('listening');
         addMessage("Listening...", 'system');
       } catch (e) {
-        addMessage("Could not start speech recognition.", 'system');
+        console.error('Speech recognition error', e);
+        addMessage("Could not start speech recognition. Try again.", 'system');
       }
     }
-
+    
     function speakResponse(text) {
       if (!synth) return;
-      synth.cancel(); // Stop existing speech
+      
+      // Stop any ongoing speech
+      synth.cancel();
+      
+      // Create a new utterance
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.0;
-      utterance.pitch = 1.1;
+      utterance.pitch = 1.0;
       utterance.volume = 1.0;
-
+      
+      // Get available voices
       const voices = synth.getVoices();
-      const femaleVoice = voices.find(v => /female/i.test(v.name)) || voices.find(v => /Google UK English Female/i.test(v.name));
-      if (femaleVoice) utterance.voice = femaleVoice;
+      
+      // Try to find a female voice
+      const femaleVoice = voices.find(voice => voice.name.includes('female') || voice.name.includes('Female'));
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+      
       synth.speak(utterance);
     }
-
-    /* ===========================
-       MESSAGE HANDLING
-       =========================== */
+    
+    // Add event listener for Enter key
     document.getElementById("user-input").addEventListener("keyup", function(event) {
-      if (event.key === "Enter") sendMessage();
+      if (event.key === "Enter") {
+        sendMessage();
+      }
     });
-
+    
+    // Get current time in HH:MM format
     function getCurrentTime() {
       const now = new Date();
-      let h = now.getHours();
-      const m = now.getMinutes().toString().padStart(2, '0');
-      const ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-      return `${h}:${m} ${ampm}`;
+      let hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+      
+      return hours + ':' + minutesStr + ' ' + ampm;
     }
-
+    
     async function sendMessage() {
       const input = document.getElementById("user-input").value.trim();
       if (!input) return;
-
+      
+      // Add user message to chat
       addMessage(input, 'user');
+      
+      // Save to chat history
       chatHistory.push({role: 'user', content: input});
+      
+      // Clear input field
       document.getElementById("user-input").value = "";
+      
+      // Show typing indicator
       showTypingIndicator();
-
-      // SECRET MODES
-      if (input.toLowerCase().includes("sneha1")) {
-        handleSecretMode(input);
-        return;
-      }
-
-      // Simulate AI response
-      setTimeout(() => {
+      
+      try {
+        const res = await fetch('/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: input })
+        });
+        
+        const data = await res.json();
+        
+        // Remove typing indicator and add AI response
         removeTypingIndicator();
-        const aiReply = `SNEAI: I understood "${input}". (This is a demo reply.)`;
-        addMessage(aiReply, 'ai');
-        chatHistory.push({role: 'ai', content: aiReply});
+        addMessage(data.reply, 'ai');
+        
+        // Save to chat history
+        chatHistory.push({role: 'ai', content: data.reply});
+        
+        // Save chat history to local storage
         saveChatHistory();
-        speakResponse(aiReply);
-      }, 1200);
+        
+        // Speak the response if speech synthesis is available
+        if (synth && window.speechSynthesis) {
+          // Extract just the main content without the signature
+          const mainContent = data.reply.split('\n\n—')[0];
+          speakResponse(mainContent);
+        }
+        
+        // Add command suggestions based on the response
+        if (data.reply.includes("I searched for") || data.reply.includes("According to")) {
+          addCommandSuggestions();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        removeTypingIndicator();
+        addMessage("Sorry, I encountered an error. Please try again.", 'ai');
+      }
     }
-
+    
     function addMessage(text, sender) {
       const chatBox = document.getElementById("chat-box");
       const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${sender}-message`;
-
+      messageDiv.className = message ${sender}-message;
+      
       const contentDiv = document.createElement("div");
       contentDiv.className = "message-content";
-
+      
+      // Process text for markdown-like formatting
+      text = processTextFormatting(text);
+      
       const messagePara = document.createElement("p");
-      messagePara.innerHTML = processTextFormatting(text);
+      messagePara.innerHTML = text; // Use innerHTML to render HTML formatting
       contentDiv.appendChild(messagePara);
-
+      
       const timeDiv = document.createElement("div");
       timeDiv.className = "message-time";
       timeDiv.textContent = getCurrentTime();
-
+      
       messageDiv.appendChild(contentDiv);
       messageDiv.appendChild(timeDiv);
+      
       chatBox.appendChild(messageDiv);
-
+      
+      // Scroll to bottom
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+    
     function processTextFormatting(text) {
-      text = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+      // Convert URLs to clickable links
+      text = text.replace(
+        /(https?:\/\/[^\s]+)/g, 
+        '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+      
+      // Convert **bold** text
       text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      
+      // Convert *italic* text
       text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      
+      // Format source citations
+      text = text.replace(/Source: (https?:\/\/[^\s]+)/g, 
+        '<div class="source-citation">Source: <a href="$1" target="_blank" rel="noopener noreferrer">$1</a></div>'
+      );
+      
+      // Format search results
+      text = text.replace(/(\d+)\. (.*?)(?=\n|$)/g, 
+        '<div class="search-result"><div class="search-result-title">$1. $2</div></div>'
+      );
+      
+      // Convert newlines to <br>
       text = text.replace(/\n/g, '<br>');
+      
       return text;
     }
-
+    
     function showTypingIndicator() {
       const chatBox = document.getElementById("chat-box");
       const typingDiv = document.createElement("div");
       typingDiv.className = "message ai-message typing-indicator";
       typingDiv.id = "typing-indicator";
-      typingDiv.innerHTML = `<div class="message-content"><p>Typing...</p></div>`;
+      
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "message-content";
+      
+      const dots = document.createElement("div");
+      dots.className = "typing-dots";
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("span");
+        dots.appendChild(dot);
+      }
+      
+      // Add a random thinking message for web searches
+      const thinkingMessages = [
+        "Searching the web for you...",
+        "Looking that up in real-time...",
+        "Gathering information from multiple sources...",
+        "Processing your request...",
+        "Analyzing data from the web..."
+      ];
+      
+      const messageText = document.createElement("p");
+      messageText.textContent = thinkingMessages[Math.floor(Math.random() * thinkingMessages.length)];
+      messageText.style.marginTop = "10px";
+      messageText.style.fontSize = "0.9em";
+      messageText.style.opacity = "0.7";
+      
+      contentDiv.appendChild(dots);
+      contentDiv.appendChild(messageText);
+      typingDiv.appendChild(contentDiv);
       chatBox.appendChild(typingDiv);
+      
+      // Scroll to bottom
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+    
     function removeTypingIndicator() {
       const typingIndicator = document.getElementById("typing-indicator");
-      if (typingIndicator) typingIndicator.remove();
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
     }
-
-    /* ===========================
-       QUICK PROMPT
-       =========================== */
+    
     function quickPrompt(text) {
       document.getElementById("user-input").value = text;
       sendMessage();
     }
-
-    /* ===========================
-       TEACH AI LOGIC
-       =========================== */
-    async function teachAI() {
-      const pattern = document.getElementById("pattern").value.trim();
-      const response = document.getElementById("response").value.trim();
-
-      if (!pattern || !response) {
-        alert("Both fields are required!");
-        return;
-      }
-      removeTypingIndicator();
-      addMessage(`New custom response added for "${pattern}"`, 'ai');
-      chatHistory.push({role: 'ai', content: response});
-      saveChatHistory();
-      closeTeachModal();
-    }
-
+    
     function showTeachModal() {
       document.getElementById("teach-modal").style.display = "flex";
     }
+    
     function closeTeachModal() {
       document.getElementById("teach-modal").style.display = "none";
     }
-
-    /* ===========================
-       CHAT HISTORY STORAGE
-       =========================== */
-    function saveChatHistory() {
-      if (chatHistory.length > 150) chatHistory = chatHistory.slice(-150);
-      localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory));
-    }
-
-    function loadChatHistory() {
-      const saved = localStorage.getItem('sneai_chat_history');
-      if (!saved) return;
-      try {
-        chatHistory = JSON.parse(saved);
-        chatHistory.forEach(msg => addMessage(msg.content, msg.role));
-      } catch (e) {
-        chatHistory = [];
+    
+    function addCommandSuggestions() {
+      const chatBox = document.getElementById("chat-box");
+      const lastMessage = chatBox.lastElementChild;
+      
+      if (lastMessage && lastMessage.classList.contains('ai-message')) {
+        const suggestionsDiv = document.createElement("div");
+        suggestionsDiv.className = "command-suggestions";
+        
+        const suggestions = [
+          "Tell me more about this",
+          "Explain in simpler terms",
+          "Search Wikipedia instead",
+          "Find more recent information"
+        ];
+        
+        suggestions.forEach(suggestion => {
+          const suggestionSpan = document.createElement("span");
+          suggestionSpan.className = "command-suggestion";
+          suggestionSpan.textContent = suggestion;
+          suggestionSpan.onclick = function() {
+            quickPrompt(suggestion);
+          };
+          suggestionsDiv.appendChild(suggestionSpan);
+        });
+        
+        lastMessage.querySelector('.message-content').appendChild(suggestionsDiv);
       }
     }
-
+    
+    async function teachAI() {
+      const pattern = document.getElementById("pattern").value.trim();
+      const response = document.getElementById("response").value.trim();
+      
+      if (!pattern || !response) {
+        alert("Both pattern and response are required!");
+        return;
+      }
+      
+      // Show typing indicator
+      showTypingIndicator();
+      
+      try {
+        const res = await fetch('/teach', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pattern, response })
+        });
+        
+        const data = await res.json();
+        
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        if (data.status === "success") {
+          closeTeachModal();
+          document.getElementById("pattern").value = "";
+          document.getElementById("response").value = "";
+          
+          // Add confirmation message to chat
+          addMessage(data.message, 'ai');
+          
+          // Save to chat history
+          chatHistory.push({role: 'ai', content: data.message});
+          saveChatHistory();
+        } else {
+          addMessage("Error: " + data.message, 'ai');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        removeTypingIndicator();
+        addMessage("Failed to teach SNEAI. Please try again.", 'ai');
+      }
+    }
+    
+    // Save chat history to local storage
+    function saveChatHistory() {
+      if (chatHistory.length > 100) {
+        // Limit history to last 100 messages
+        chatHistory = chatHistory.slice(-100);
+      }
+      localStorage.setItem('sneai_chat_history', JSON.stringify(chatHistory));
+    }
+    
+    // Load chat history from local storage
+    function loadChatHistory() {
+      const savedHistory = localStorage.getItem('sneai_chat_history');
+      if (savedHistory) {
+        try {
+          chatHistory = JSON.parse(savedHistory);
+          
+          // Display up to last 10 messages for cleaner interface
+          const recentMessages = chatHistory.slice(-10);
+          for (const msg of recentMessages) {
+            addMessage(msg.content, msg.role);
+          }
+        } catch (e) {
+          console.error('Error loading chat history:', e);
+          chatHistory = [];
+        }
+      }
+    }
+    
+    // Clear chat
     function clearChat() {
-      document.getElementById("chat-box").innerHTML = '';
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = '';
       chatHistory = [];
       localStorage.removeItem('sneai_chat_history');
-      addMessage("Hello! I'm SNEAI, your intelligent assistant. Ask me anything!", 'ai');
+      
+      // Add welcome message
+      const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities. Ask me anything, and I'll do my best to help you!";
+      addMessage(welcomeMessage, 'ai');
+      chatHistory.push({role: 'ai', content: welcomeMessage});
     }
-
-    /* ===========================
-       THEME TOGGLE
-       =========================== */
+    
+    // Theme toggle functionality
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
-      const icon = document.getElementById('theme-icon');
+      const themeIcon = document.getElementById('theme-icon');
+      
       if (document.body.classList.contains('dark-theme')) {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
         localStorage.setItem('theme', 'dark');
       } else {
-        icon.classList.add('fa-moon');
-        icon.classList.remove('fa-sun');
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
         localStorage.setItem('theme', 'light');
       }
     }
-
-    /* ===========================
-       SECRET MODES
-       =========================== */
-    function handleSecretMode(input) {
-      removeTypingIndicator();
-      let reply = "";
-      if (input.toLowerCase().includes("sneha1")) {
-        reply = "💖 Hey love! Tum meri duniya ki sabse pyaari insaan ho. 🥰";
-      } else if (input.toLowerCase().includes("sneha2")) {
-        reply = "😘 Mera dil sirf tumhare liye dhadakta hai. Tum meri smile ka reason ho.";
-      } else {
-        reply = "❤️ Secret mode active! Tum bahut special ho.";
+    
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(event) {
+      // Ctrl+Enter or Cmd+Enter to send message
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+        sendMessage();
       }
-      addMessage(reply, 'ai');
-      chatHistory.push({role: 'ai', content: reply});
-      saveChatHistory();
-      speakResponse(reply);
-    }
-
-    /* ===========================
-       EVENT LISTENERS & INIT
-       =========================== */
+      
+      // Escape to close modal
+      if (event.key === 'Escape') {
+        closeTeachModal();
+      }
+    });
+    
+    // Load saved theme preference and chat history on page load
     document.addEventListener('DOMContentLoaded', () => {
       const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') document.body.classList.add('dark-theme');
-      loadChatHistory();
-      if (chatHistory.length === 0) {
-        addMessage("Hello! I'm SNEAI, your intelligent assistant. Ask me anything!", 'ai');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        document.getElementById('theme-icon').classList.remove('fa-moon');
+        document.getElementById('theme-icon').classList.add('fa-sun');
       }
+      
+      // Clear chat box first
+      document.getElementById("chat-box").innerHTML = '';
+      
+      // Load chat history
+      loadChatHistory();
+      
+      // If no history, show welcome message
+      if (chatHistory.length === 0) {
+        const welcomeMessage = "Hello! I'm SNEAI, your intelligent assistant with real-time web search capabilities. Ask me anything, and I'll do my best to help you!";
+        addMessage(welcomeMessage, 'ai');
+        chatHistory.push({role: 'ai', content: welcomeMessage});
+      }
+      
+      // Initialize speech recognition
       initSpeechRecognition();
     });
-
+    
+    // Close modal when clicking outside
     window.onclick = function(event) {
       const modal = document.getElementById("teach-modal");
-      if (event.target == modal) closeTeachModal();
+      if (event.target == modal) {
+        closeTeachModal();
+      }
     }
   </script>
 </body>
-</html>
+</html>         
