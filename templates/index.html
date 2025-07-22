@@ -46,84 +46,104 @@
   </div>
 
   <!-- JS SCRIPT -->
-  <script>
-    const chatBox = document.getElementById("chat-box");
-    const userInput = document.getElementById("user-input");
-    const sendBtn = document.getElementById("send-btn");
-    const themeBtn = document.getElementById("theme-btn");
+ <script>
+  const chatBox = document.getElementById("chat-box");
+  const userInput = document.getElementById("user-input");
+  const sendBtn = document.getElementById("send-btn");
+  const themeBtn = document.getElementById("theme-btn");
 
-    // 20+ Secret Romantic Keys
-    const secretKeys = {
-      sneha1: "Tum meri coffee ho... bina tumhare subah incomplete lagti hai ☕❤️",
-      sneha2: "Aaj tum meri smile ki wajah banoge kya? 😊💖",
-      sneha3: "Tum ho ya Google? Kyunki mujhe jo chahiye, sab tum mein milta hai 😍",
-      sneha4: "Mujhse shaadi karogi? 😉💍",
-      sneha5: "Tum meri heartbeat ho ❤️... bina tumhare sab kuch boring lagta hai.",
-      sneha6: "Tumhare bina life waise hai jaise phone bina battery 🔋❤️",
-      sneha7: "Tum meri WhatsApp notification ho... har bar dil skip karta hai! 💌",
-      sneha8: "Tum meri world ki sabse cute bug ho jo fix nahi karni! 😘",
-      sneha9: "Tum ho ya WiFi? Tumse connection hi nahi toot-ta ❤️📶",
-      sneha10: "Tum meri playlist ho... bina tumhare sab dull lagta hai 🎵💖",
-      sneha11: "Tum meri chai ke cup mein extra mithas ho ☕😍",
-      sneha12: "Tum meri coding ka favorite function ho – bina tumhare error aata hai ❤️",
-      sneha13: "Tum meri dreams ki default setting ho 😴💕",
-      sneha14: "Tum meri heartbeat ka shortcut key ho Ctrl+❤",
-      sneha15: "Tumhare bina subah incomplete lagti hai... like breakfast bina chai! ☀️",
-      sneha16: "Tum meri browser history ho – sab tum par hi khatam hota hai 😉",
-      sneha17: "Tum meri memory card ho – sab yaadein tum mein store hain ❤️",
-      sneha18: "Tum meri GitHub commit ho – har din tum pe likhna chahta hoon 💻💖",
-      sneha19: "Tum meri favorite notification sound ho 📱💝",
-      sneha20: "Tum meri khwahishon ka permanent bookmark ho ❤️🔥"
-    };
+  // 20+ Secret Romantic Keys
+  const secretKeys = {
+    sneha1: "Tum meri coffee ho... bina tumhare subah incomplete lagti hai ☕❤️",
+    sneha2: "Aaj tum meri smile ki wajah banoge kya? 😊💖",
+    sneha3: "Tum ho ya Google? Kyunki mujhe jo chahiye, sab tum mein milta hai 😍",
+    sneha4: "Mujhse shaadi karogi? 😉💍",
+    sneha5: "Tum meri heartbeat ho ❤️... bina tumhare sab kuch boring lagta hai.",
+    sneha6: "Tumhare bina life waise hai jaise phone bina battery 🔋❤️",
+    sneha7: "Tum meri WhatsApp notification ho... har bar dil skip karta hai! 💌",
+    sneha8: "Tum meri world ki sabse cute bug ho jo fix nahi karni! 😘",
+    sneha9: "Tum ho ya WiFi? Tumse connection hi nahi toot-ta ❤️📶",
+    sneha10: "Tum meri playlist ho... bina tumhare sab dull lagta hai 🎵💖",
+    sneha11: "Tum meri chai ke cup mein extra mithas ho ☕😍",
+    sneha12: "Tum meri coding ka favorite function ho – bina tumhare error aata hai ❤️",
+    sneha13: "Tum meri dreams ki default setting ho 😴💕",
+    sneha14: "Tum meri heartbeat ka shortcut key ho Ctrl+❤",
+    sneha15: "Tumhare bina subah incomplete lagti hai... like breakfast bina chai! ☀️",
+    sneha16: "Tum meri browser history ho – sab tum par hi khatam hota hai 😉",
+    sneha17: "Tum meri memory card ho – sab yaadein tum mein store hain ❤️",
+    sneha18: "Tum meri GitHub commit ho – har din tum pe likhna chahta hoon 💻💖",
+    sneha19: "Tum meri favorite notification sound ho 📱💝",
+    sneha20: "Tum meri khwahishon ka permanent bookmark ho ❤️🔥"
+  };
 
-    function addMessage(text, type = "ai") {
-      const msgDiv = document.createElement("div");
-      msgDiv.classList.add("message", type === "user" ? "user-message" : "ai-message");
-      msgDiv.innerHTML = `<p>${text}</p><span class="message-time">${getTime()}</span>`;
-      chatBox.appendChild(msgDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
+  function addMessage(text, type = "ai", withTyping = false) {
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message", type === "user" ? "user-message" : "ai-message", "fade-in");
+    const msgContent = document.createElement("p");
+
+    if (withTyping) {
+      let i = 0;
+      const interval = setInterval(() => {
+        msgContent.innerHTML += text[i];
+        i++;
+        if (i === text.length) clearInterval(interval);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 30);
+    } else {
+      msgContent.innerHTML = text;
     }
 
-    function getTime() {
-      const now = new Date();
-      return now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
-    }
+    const timeSpan = document.createElement("span");
+    timeSpan.classList.add("message-time");
+    timeSpan.innerText = getTime();
 
-    function handleSend() {
-      const userText = userInput.value.trim();
-      if (!userText) return;
-      addMessage(userText, "user");
-      userInput.value = "";
+    msgDiv.appendChild(msgContent);
+    msgDiv.appendChild(timeSpan);
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 
-      setTimeout(() => {
-        const response = getAIResponse(userText);
-        addMessage(response, "ai");
-      }, 400);
-    }
+  function getTime() {
+    const now = new Date();
+    return now.getHours() + ":" + (now.getMinutes() < 10 ? "0" : "") + now.getMinutes();
+  }
 
-    function getAIResponse(msg) {
-      msg = msg.toLowerCase();
-      if (secretKeys[msg]) return secretKeys[msg];
+  function handleSend() {
+    const userText = userInput.value.trim();
+    if (!userText) return;
+    addMessage(userText, "user");
+    userInput.value = "";
 
-      if (msg.includes("hi") || msg.includes("hello")) return "Hello! Main SNEAI hoon, kaise ho? 😊";
-      if (msg.includes("love")) return "Love mode on! 💕 Tum kya soch rahe ho?";
-      if (msg.includes("joke")) return "Ek joke suno: Scientist ne light ko date pe kyun bulaya? Kyunki wo uski 'type' thi! 😂";
-      return "Hmm... ye interesting hai! Aur batao? 😉";
-    }
+    setTimeout(() => {
+      const response = getAIResponse(userText);
+      addMessage(response, "ai", true); // Typing effect
+    }, 400);
+  }
 
-    sendBtn.addEventListener("click", handleSend);
-    userInput.addEventListener("keypress", (e) => e.key === "Enter" && handleSend());
+  function getAIResponse(msg) {
+    msg = msg.toLowerCase();
+    if (secretKeys[msg]) return secretKeys[msg];
 
-    themeBtn.addEventListener("click", () => {
-      document.body.classList.toggle("dark-theme");
-      themeBtn.innerHTML = document.body.classList.contains("dark-theme")
-        ? '<i class="fa-solid fa-sun"></i>'
-        : '<i class="fa-solid fa-moon"></i>';
-    });
+    if (msg.includes("hi") || msg.includes("hello")) return "Hello! Main SNEAI hoon, kaise ho? 😊";
+    if (msg.includes("love")) return "Love mode on! 💕 Tum kya soch rahe ho?";
+    if (msg.includes("joke")) return "Ek joke suno: Scientist ne light ko date pe kyun bulaya? Kyunki wo uski 'type' thi! 😂";
+    return "Hmm... ye interesting hai! Aur batao? 😉";
+  }
 
-    document.getElementById("help-btn").addEventListener("click", () => {
-      addMessage("Commands: hi/hello, love, joke, and secret keys like 'sneha1' ❤️", "ai");
-    });
-  </script>
+  sendBtn.addEventListener("click", handleSend);
+  userInput.addEventListener("keypress", (e) => e.key === "Enter" && handleSend());
+
+  themeBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark-theme");
+    themeBtn.innerHTML = document.body.classList.contains("dark-theme")
+      ? '<i class="fa-solid fa-sun"></i>'
+      : '<i class="fa-solid fa-moon"></i>';
+  });
+
+  document.getElementById("help-btn").addEventListener("click", () => {
+    addMessage("Commands: hi/hello, love, joke, and secret keys like 'sneha1' ❤️", "ai");
+  });
+</script>
+
 </body>
 </html>
