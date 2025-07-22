@@ -6,6 +6,9 @@ import re
 import time
 import random
 
+# Use html5lib parser instead of lxml
+BS4_PARSER = 'html5lib'
+
 # User agent with SNEAI's identity
 USER_AGENT = "Mozilla/5.0 (compatible; SNEAI/1.0; +https://github.com/Amangupta210/today_ai_v2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
@@ -27,7 +30,7 @@ def get_search_results(query, num_results=5):
         response = requests.get(url, headers=headers, timeout=10)
         
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(response.text, BS4_PARSER)
             results = []
             
             # Extract search results
@@ -110,7 +113,7 @@ def scrape_webpage_content(url):
         response = requests.get(url, headers=headers, timeout=10)
         
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(response.text, BS4_PARSER)
             
             # Remove script and style elements
             for script in soup(["script", "style"]):
